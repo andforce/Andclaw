@@ -5,7 +5,8 @@
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,7 +18,8 @@
     <uses-permission android:name="android.permission.REQUEST_PASSWORD_COMPLEXITY" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <uses-permission android:name="com.google.android.setupwizard.SETUP_COMPAT_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
@@ -43,7 +45,8 @@
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_VPN" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_WALLPAPER" />
     <uses-permission android:name="android.permission.MANAGE_DEVICE_POLICY_WIFI" />
-    <uses-permission android:name="android.permission.UPDATE_DEVICE_MANAGEMENT_RESOURCES" />
+    <uses-permission android:name="android.permission.UPDATE_DEVICE_MANAGEMENT_RESOURCES"
+        tools:ignore="ProtectedPermissions" />
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -120,22 +123,6 @@
             </intent-filter>
         </activity>
 
-        <!-- KioskMode -->
-        <activity
-            android:name=".policy.locktask.KioskModeActivity"
-            android:enabled="false"
-            android:exported="true"
-            android:theme="@style/Base.Theme.MyApplication"
-            android:screenOrientation="portrait"
-            android:launchMode="singleInstance"
-            tools:ignore="DiscouragedApi">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <!-- GetProvisioningMode -->
         <activity
             android:name=".provision.GetProvisioningModeActivity"
@@ -183,13 +170,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <!-- VPN -->
-        <activity
-            android:name="top.nicelee.purehost.MainActivity"
-            android:exported="true"
-            android:label="VPN"
-            android:windowSoftInputMode="stateHidden|adjustPan" />
 
         <!-- DeviceAdminReceiver -->
         <receiver
@@ -313,16 +293,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="androidx.enterprise.feedback.action.APP_STATES" />
-            </intent-filter>
-        </service>
-
-        <!-- LocalVpnService -->
-        <service
-            android:name="top.nicelee.purehost.vpn.LocalVpnServiceKT"
-            android:exported="false"
-            android:permission="android.permission.BIND_VPN_SERVICE">
-            <intent-filter>
-                <action android:name="android.net.VpnService" />
             </intent-filter>
         </service>
 

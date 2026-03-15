@@ -4,6 +4,7 @@ import Features from './components/Features'
 import HowItWorks from './components/HowItWorks'
 import Actions from './components/Actions'
 import Comparison from './components/Comparison'
+import DeviceOwnerSetup from './components/DeviceOwnerSetup'
 import Footer from './components/Footer'
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
       <HowItWorks />
       <Actions />
       <Comparison />
+      <DeviceOwnerSetup />
       <Footer />
     </div>
   )

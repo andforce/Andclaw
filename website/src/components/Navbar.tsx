@@ -5,7 +5,7 @@ const links = [
   { href: '#how-it-works', label: '原理' },
   { href: '#actions', label: '能力' },
   { href: '#comparison', label: '对比' },
-  { href: '#setup', label: '在线激活' },
+  { href: '#/install', label: '在线安装' },
 ]
 
 export default function Navbar() {

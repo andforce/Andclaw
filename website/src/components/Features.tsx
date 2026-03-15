@@ -5,54 +5,54 @@ const features = [
     icon: <BrainIcon />,
     title: 'AI 驱动',
     desc: '支持 Kimi / OpenAI 兼容 API，用自然语言告诉手机你想做什么，AI 自主规划并执行。',
-    color: 'neon-cyan' as const,
+    color: 'cyan' as const,
   },
   {
     icon: <EyeIcon />,
     title: '屏幕感知',
     desc: '实时读取 UI 层次结构，WebView/浏览器场景自动截图辅助视觉分析，真正"看懂"屏幕。',
-    color: 'neon-purple' as const,
+    color: 'purple' as const,
   },
   {
     icon: <HandIcon />,
     title: '拟人操作',
     desc: '模拟点击、滑动、长按、文本输入等手势操作，像真人一样与任何 App 交互。',
-    color: 'neon-green' as const,
+    color: 'green' as const,
   },
   {
     icon: <CameraIcon />,
     title: '多媒体能力',
     desc: '拍照、录像、录屏、截图、音量控制，全方位多媒体操作一句话搞定。',
-    color: 'neon-cyan' as const,
+    color: 'cyan' as const,
   },
   {
     icon: <TelegramIcon />,
     title: '远程控制',
     desc: '通过 Telegram Bot 远程下发指令，实时接收截图和录像，不在身边也能操控设备。',
-    color: 'neon-purple' as const,
+    color: 'purple' as const,
   },
   {
     icon: <ShieldIcon />,
     title: '企业管控',
     desc: 'Device Owner 模式下支持静默安装/卸载、Kiosk 锁定、设备策略管理等企业级能力。',
-    color: 'neon-green' as const,
+    color: 'green' as const,
   },
 ]
 
 const colorMap = {
-  'neon-cyan': {
+  cyan: {
     border: 'border-neon-cyan/20 hover:border-neon-cyan/50',
     iconBg: 'bg-neon-cyan/10',
     iconText: 'text-neon-cyan',
     glow: 'hover:shadow-[0_0_20px_rgba(34,211,238,0.15)]',
   },
-  'neon-purple': {
+  purple: {
     border: 'border-neon-purple/20 hover:border-neon-purple/50',
     iconBg: 'bg-neon-purple/10',
     iconText: 'text-neon-purple',
     glow: 'hover:shadow-[0_0_20px_rgba(139,92,246,0.15)]',
   },
-  'neon-green': {
+  green: {
     border: 'border-neon-green/20 hover:border-neon-green/50',
     iconBg: 'bg-neon-green/10',
     iconText: 'text-neon-green',
@@ -80,8 +80,8 @@ export default function Features() {
             return (
               <div
                 key={f.title}
-                className={`rounded-xl border bg-dark-card/60 backdrop-blur-sm p-6 transition-all duration-300 ${c.border} ${c.glow} ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}
-                style={{ animationDelay: `${i * 100}ms` }}
+                className={`fade-in-up rounded-xl border bg-dark-card/60 backdrop-blur-sm p-6 transition-all duration-300 ${c.border} ${c.glow} ${isVisible ? 'is-visible' : ''}`}
+                style={{ transitionDelay: `${i * 100}ms` }}
               >
                 <div className={`w-12 h-12 rounded-lg ${c.iconBg} flex items-center justify-center mb-4`}>
                   <span className={c.iconText}>{f.icon}</span>

@@ -91,12 +91,12 @@ export default function HowItWorks() {
               return (
                 <div
                   key={step.num}
-                  className={`relative md:flex items-center ${isLeft ? '' : 'md:flex-row-reverse'} ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}
-                  style={{ animationDelay: `${i * 120}ms` }}
+                  className={`fade-in-up relative md:flex items-center ${isLeft ? '' : 'md:flex-row-reverse'} ${isVisible ? 'is-visible' : ''}`}
+                  style={{ transitionDelay: `${i * 120}ms` }}
                 >
                   {/* content */}
                   <div className={`md:w-[calc(50%-2rem)] ${isLeft ? 'md:text-right md:pr-8' : 'md:text-left md:pl-8'}`}>
-                    <div className={`inline-block rounded-xl border border-dark-border bg-dark-card/60 backdrop-blur-sm p-5 transition-all hover:border-neon-cyan/30 ${isLeft ? '' : ''}`}>
+                    <div className="inline-block rounded-xl border border-dark-border bg-dark-card/60 backdrop-blur-sm p-5 transition-all hover:border-neon-cyan/30">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-neon-cyan font-[family-name:var(--font-family-display)] text-sm font-bold">{step.num}</span>
                         <h3 className="text-white font-semibold">{step.title}</h3>
@@ -110,7 +110,7 @@ export default function HowItWorks() {
                     {step.icon}
                   </div>
 
-                  {/* spacer for opposite side */}
+                  {/* spacer */}
                   <div className="hidden md:block md:w-[calc(50%-2rem)]" />
                 </div>
               )
@@ -118,7 +118,7 @@ export default function HowItWorks() {
           </div>
 
           {/* loop arrow */}
-          <div className={`mt-8 flex justify-center ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '750ms' }}>
+          <div className={`fade-in-up mt-8 flex justify-center ${isVisible ? 'is-visible' : ''}`} style={{ transitionDelay: '750ms' }}>
             <div className="flex items-center gap-2 px-5 py-2.5 rounded-full border border-neon-green/30 bg-neon-green/5 text-neon-green text-sm font-medium">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" />

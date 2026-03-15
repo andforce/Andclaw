@@ -37,7 +37,7 @@ export default function Comparison() {
           与主流 Android 自动化方案的全方位对比
         </p>
 
-        <div className={`overflow-x-auto ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
+        <div className={`fade-in-up overflow-x-auto ${isVisible ? 'is-visible' : ''}`}>
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-dark-border">
@@ -72,7 +72,7 @@ export default function Comparison() {
         </div>
 
         {/* advantages */}
-        <div className={`mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`} style={{ animationDelay: '200ms' }}>
+        <div className={`fade-in-up mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 ${isVisible ? 'is-visible' : ''}`} style={{ transitionDelay: '200ms' }}>
           {[
             '完全在设备上运行，无需额外硬件',
             '大模型决策，自适应不同应用界面',

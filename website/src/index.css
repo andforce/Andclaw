@@ -62,20 +62,15 @@ body {
   animation: breathe 3s ease-in-out infinite;
 }
 
-/* fade-in on scroll */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.animate-fade-in-up {
-  animation: fadeInUp 0.6s ease-out forwards;
+/* fade-in on scroll — transition-based for reliability */
+.fade-in-up {
   opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.fade-in-up.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* neon border gradient */

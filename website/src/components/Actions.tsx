@@ -20,43 +20,58 @@ const actions: Record<Category, { name: string; desc: string; code: string }[]> 
     { name: 'wait', desc: '等待页面加载后重新检查', code: '{"type":"wait","duration":3000}' },
   ],
   system: [
-    { name: 'global_action:back', desc: '模拟返回键', code: '{"type":"global_action","global_action":"back"}' },
-    { name: 'global_action:home', desc: '回到桌面', code: '{"type":"global_action","global_action":"home"}' },
-    { name: 'global_action:recents', desc: '打开最近任务', code: '{"type":"global_action","global_action":"recents"}' },
-    { name: 'global_action:notifications', desc: '下拉通知栏', code: '{"type":"global_action","global_action":"notifications"}' },
+    { name: 'back', desc: '模拟返回键', code: '{"type":"global_action","global_action":"back"}' },
+    { name: 'home', desc: '回到桌面', code: '{"type":"global_action","global_action":"home"}' },
+    { name: 'recents', desc: '打开最近任务', code: '{"type":"global_action","global_action":"recents"}' },
+    { name: 'notifications', desc: '下拉通知栏', code: '{"type":"global_action","global_action":"notifications"}' },
     { name: 'volume', desc: '音量设置/调节/静音/查询', code: '{"type":"volume","volume_action":"set","extras":{"level":50}}' },
     { name: 'download', desc: '通过 URL 直接下载文件', code: '{"type":"download","data":"https://example.com/file.apk"}' },
   ],
   media: [
     { name: 'screenshot', desc: '截图并保存到相册', code: '{"type":"screenshot"}' },
-    { name: 'camera:take_photo', desc: '拍照并保存', code: '{"type":"camera","camera_action":"take_photo"}' },
-    { name: 'camera:start_video', desc: '开始录像', code: '{"type":"camera","camera_action":"start_video"}' },
-    { name: 'camera:stop_video', desc: '停止录像并保存', code: '{"type":"camera","camera_action":"stop_video"}' },
-    { name: 'screen_record:start', desc: '开始录屏', code: '{"type":"screen_record","screen_record_action":"start_record"}' },
-    { name: 'screen_record:stop', desc: '停止录屏并保存', code: '{"type":"screen_record","screen_record_action":"stop_record"}' },
+    { name: 'take_photo', desc: '拍照并保存', code: '{"type":"camera","camera_action":"take_photo"}' },
+    { name: 'start_video', desc: '开始录像', code: '{"type":"camera","camera_action":"start_video"}' },
+    { name: 'stop_video', desc: '停止录像并保存', code: '{"type":"camera","camera_action":"stop_video"}' },
+    { name: 'start_record', desc: '开始录屏', code: '{"type":"screen_record","screen_record_action":"start_record"}' },
+    { name: 'stop_record', desc: '停止录屏并保存', code: '{"type":"screen_record","screen_record_action":"stop_record"}' },
   ],
   device: [
-    { name: 'dpm:installPackage', desc: '静默安装 APK', code: '{"type":"dpm","dpm_action":"installPackage","extras":{"file_path":"..."}}' },
-    { name: 'dpm:uninstallPackage', desc: '静默卸载应用', code: '{"type":"dpm","dpm_action":"uninstallPackage","extras":{"package_name":"..."}}' },
-    { name: 'dpm:lockNow', desc: '立即锁屏', code: '{"type":"dpm","dpm_action":"lockNow"}' },
-    { name: 'dpm:setApplicationHidden', desc: '隐藏/显示应用', code: '{"type":"dpm","dpm_action":"setApplicationHidden","extras":{"package_name":"...","hidden":true}}' },
-    { name: 'dpm:setLockTaskPackages', desc: 'Kiosk 模式锁定应用', code: '{"type":"dpm","dpm_action":"setLockTaskPackages","extras":{"packages":["..."]}}' },
-    { name: 'dpm:setPermissionGrantState', desc: '自动授予应用权限', code: '{"type":"dpm","dpm_action":"setPermissionGrantState","extras":{"package_name":"...","permission":"...","grant_state":1}}' },
+    { name: 'installPackage', desc: '静默安装 APK', code: '{"type":"dpm","dpm_action":"installPackage","extras":{...}}' },
+    { name: 'uninstallPackage', desc: '静默卸载应用', code: '{"type":"dpm","dpm_action":"uninstallPackage","extras":{...}}' },
+    { name: 'lockNow', desc: '立即锁屏', code: '{"type":"dpm","dpm_action":"lockNow"}' },
+    { name: 'setApplicationHidden', desc: '隐藏/显示应用', code: '{"type":"dpm","dpm_action":"setApplicationHidden","extras":{...}}' },
+    { name: 'setLockTaskPackages', desc: 'Kiosk 模式锁定应用', code: '{"type":"dpm","dpm_action":"setLockTaskPackages","extras":{...}}' },
+    { name: 'setPermissionGrantState', desc: '自动授予应用权限', code: '{"type":"dpm","dpm_action":"setPermissionGrantState","extras":{...}}' },
   ],
 }
 
-const tabColors: Record<Category, string> = {
-  basic: 'neon-cyan',
-  system: 'neon-purple',
-  media: 'neon-green',
-  device: 'neon-cyan',
+const tabStyleMap: Record<Category, { active: string; badge: string; cardBorder: string }> = {
+  basic: {
+    active: 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/40',
+    badge: 'bg-neon-cyan/10 text-neon-cyan',
+    cardBorder: 'hover:border-neon-cyan/30',
+  },
+  system: {
+    active: 'bg-neon-purple/15 text-neon-purple border-neon-purple/40',
+    badge: 'bg-neon-purple/10 text-neon-purple',
+    cardBorder: 'hover:border-neon-purple/30',
+  },
+  media: {
+    active: 'bg-neon-green/15 text-neon-green border-neon-green/40',
+    badge: 'bg-neon-green/10 text-neon-green',
+    cardBorder: 'hover:border-neon-green/30',
+  },
+  device: {
+    active: 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/40',
+    badge: 'bg-neon-cyan/10 text-neon-cyan',
+    cardBorder: 'hover:border-neon-cyan/30',
+  },
 }
 
 export default function Actions() {
   const [active, setActive] = useState<Category>('basic')
   const { ref, isVisible } = useInView()
-
-  const color = tabColors[active]
+  const styles = tabStyleMap[active]
 
   return (
     <section id="actions" className="py-24 px-6 relative" ref={ref}>
@@ -74,15 +89,15 @@ export default function Actions() {
         </p>
 
         {/* tabs */}
-        <div className={`flex flex-wrap justify-center gap-2 mb-10 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}>
+        <div className={`fade-in-up flex flex-wrap justify-center gap-2 mb-10 ${isVisible ? 'is-visible' : ''}`}>
           {categories.map((cat) => (
             <button
               key={cat.key}
               onClick={() => setActive(cat.key)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all border ${
                 active === cat.key
-                  ? `bg-${tabColors[cat.key]}/15 text-${tabColors[cat.key]} border border-${tabColors[cat.key]}/40`
-                  : 'text-gray-400 border border-dark-border hover:text-gray-200 hover:border-gray-600'
+                  ? tabStyleMap[cat.key].active
+                  : 'text-gray-400 border-dark-border hover:text-gray-200 hover:border-gray-600'
               }`}
             >
               {cat.label}
@@ -95,11 +110,11 @@ export default function Actions() {
           {actions[active].map((action, i) => (
             <div
               key={action.name}
-              className={`rounded-lg border border-dark-border bg-dark-card/40 p-4 transition-all hover:border-${color}/30 ${isVisible ? 'animate-fade-in-up' : 'opacity-0'}`}
-              style={{ animationDelay: `${i * 60}ms` }}
+              className={`fade-in-up rounded-lg border border-dark-border bg-dark-card/40 p-4 transition-all ${styles.cardBorder} ${isVisible ? 'is-visible' : ''}`}
+              style={{ transitionDelay: `${i * 60}ms` }}
             >
               <div className="flex items-start gap-3">
-                <code className={`text-xs font-mono px-2 py-1 rounded bg-${color}/10 text-${color} shrink-0 mt-0.5`}>
+                <code className={`text-xs font-mono px-2 py-1 rounded shrink-0 mt-0.5 ${styles.badge}`}>
                   {action.name}
                 </code>
                 <p className="text-gray-300 text-sm">{action.desc}</p>

@@ -32,6 +32,25 @@
 | **📱 设备管控** | Device Owner 模式下支持企业级设备管理（静默装卸、Kiosk 等） |
 | **🤖 Telegram 远程控制** | 通过 Telegram Bot 远程下发指令、接收截图/录像 |
 
+## 📋 与其他方案对比
+
+| 特性 | Andclaw | [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) | [肉包 Roubao](https://github.com/Turbo1123/roubao) | 豆包手机 |
+|-----|:-------:|:--------:|:-------:|:-------:|
+| 无需电脑 | ✅ | ❌ 需 PC 运行 Python | ✅ | ✅ |
+| 无需专用硬件 | ✅ | ✅ | ✅ | ❌ 需购买 3499 元工程机 |
+| 无需 Shizuku / ADB | ✅ 无障碍服务 | ❌ ADB 控制 | ❌ 依赖 Shizuku | ✅ |
+| 远程控制 | ✅ Telegram Bot | ❌ | ❌ | ❌ |
+| 自定义模型 | ✅ 多 Provider | ✅ | ✅ | ❌ 仅豆包 |
+| 开源 | ✅ | ✅ | ✅ | ❌ |
+| 原生 Android | ✅ Kotlin | ❌ Python | ✅ Kotlin | ✅ |
+
+
+**Andclaw 的核心差异**：
+- **零外部依赖**：基于 Android 无障碍服务，无需 Shizuku 初始化、无需 ADB 连接、无需电脑
+- **远程控制**：通过 Telegram Bot 远程下发指令、接收截图和录像，适合无人值守场景
+- **UI 层级 + 视觉双模感知**：优先解析 Accessibility 节点树，WebView/浏览器场景自动切换截图分析
+- **循环检测 + 截图重试**：同一动作重复 5 次自动截图视觉重试，避免 Agent 死循环
+
 ---
 
 ## 📱 演示
@@ -189,27 +208,6 @@ Moonshot AI 提供了两套独立的 API 服务，API Key **不通用**：
 | `/stop` | 停止当前正在执行的任务 |
 
 截图、拍照、录像完成后会自动发送到 Telegram 对话中。
-
----
-
-## 📋 与其他方案对比
-
-| 特性 | Andclaw | [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) | [肉包 Roubao](https://github.com/Turbo1123/roubao) | 豆包手机 |
-|-----|:-------:|:--------:|:-------:|:-------:|
-| 无需电脑 | ✅ | ❌ 需 PC 运行 Python | ✅ | ✅ |
-| 无需专用硬件 | ✅ | ✅ | ✅ | ❌ 需购买 3499 元工程机 |
-| 无需 Shizuku / ADB | ✅ 无障碍服务 | ❌ ADB 控制 | ❌ 依赖 Shizuku | ✅ |
-| 远程控制 | ✅ Telegram Bot | ❌ | ❌ | ❌ |
-| 自定义模型 | ✅ 多 Provider | ✅ | ✅ | ❌ 仅豆包 |
-| 开源 | ✅ | ✅ | ✅ | ❌ |
-| 原生 Android | ✅ Kotlin | ❌ Python | ✅ Kotlin | ✅ |
-
-
-**Andclaw 的核心差异**：
-- **零外部依赖**：基于 Android 无障碍服务，无需 Shizuku 初始化、无需 ADB 连接、无需电脑
-- **远程控制**：通过 Telegram Bot 远程下发指令、接收截图和录像，适合无人值守场景
-- **UI 层级 + 视觉双模感知**：优先解析 Accessibility 节点树，WebView/浏览器场景自动切换截图分析
-- **循环检测 + 截图重试**：同一动作重复 5 次自动截图视觉重试，避免 Agent 死循环
 
 ---
 

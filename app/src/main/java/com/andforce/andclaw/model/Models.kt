@@ -137,11 +137,11 @@ data class AgentUiState(
     val isRunning: Boolean = false,
     val status: String = "waiting command...",
     val userInput: String = "",
-    val aiProvider: String = "Kimi"
+    val aiProvider: String = "Kimi Code"
 )
 
 data class ApiConfig(
-    val provider: String = "Kimi",
+    val provider: String = "Kimi Code",
     val apiKey: String = "",
     val apiUrl: String = "https://api.kimi.com/coding",
     val model: String = "kimi-k2.5"

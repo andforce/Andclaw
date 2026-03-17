@@ -5,8 +5,6 @@ import android.app.admin.DevicePolicyManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.view.LayoutInflater
-import android.widget.ArrayAdapter
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.os.Bundle
@@ -26,10 +24,8 @@ import com.andforce.mdm.center.AppUtils
 import com.afwsamples.testdpc.DevicePolicyManagerGateway
 import com.afwsamples.testdpc.DevicePolicyManagerGatewayImpl
 import com.afwsamples.testdpc.databinding.ActivitySetupKioskLayoutBinding
-import com.afwsamples.testdpc.databinding.DialogSettingsBinding
 import com.afwsamples.testdpc.policy.locktask.viewmodule.KioskViewModule
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.base.services.IAiConfigService
 import com.base.services.ITgBridgeService
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -57,7 +53,6 @@ open class SetupKioskModeActivity : AppCompatActivity() {
     private val deviceStatusViewModel: DeviceStatusViewModel by inject()
 
     private val tgBridgeService: ITgBridgeService by inject()
-    private val aiConfigService: IAiConfigService by inject()
 
     private var appsActivityClickCount = 0
     private var lastAppsClickTime = 0L
@@ -101,7 +96,7 @@ open class SetupKioskModeActivity : AppCompatActivity() {
             }
 
             binding.openAiSettings.setOnClickListener {
-                showSettingsDialog()
+                openAiSettings()
             }
 
         }
@@ -280,54 +275,8 @@ open class SetupKioskModeActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun showSettingsDialog() {
-        val dialogBinding = DialogSettingsBinding.inflate(LayoutInflater.from(this))
-
-        val providers = listOf("Kimi", "OpenAI")
-        val providerAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, providers)
-        dialogBinding.spinnerProvider.apply {
-            setAdapter(providerAdapter)
-            setText(aiConfigService.provider, false)
-            setOnItemClickListener { _, _, position, _ ->
-                when (providers[position]) {
-                    "Kimi" -> {
-                        dialogBinding.etBaseUrl.setText("https://api.kimi.com/coding")
-                        dialogBinding.etModel.setText("kimi-k2.5")
-                        dialogBinding.etApiKey.setText(aiConfigService.defaultApiKey)
-                    }
-                    "OpenAI" -> {
-                        dialogBinding.etBaseUrl.setText("https://api.openai.com/v1/chat/completions")
-                        dialogBinding.etModel.setText("gpt-4o")
-                    }
-                }
-            }
-        }
-
-        dialogBinding.etBaseUrl.setText(aiConfigService.apiUrl)
-        dialogBinding.etApiKey.setText(aiConfigService.apiKey)
-        dialogBinding.etModel.setText(aiConfigService.model)
-
-        dialogBinding.etTgToken.setText(aiConfigService.tgToken)
-
-        val savedChatId = aiConfigService.getTgChatId()
-        dialogBinding.etTgChatId.setText(if (savedChatId == 0L) "" else savedChatId.toString())
-
-        MaterialAlertDialogBuilder(this)
-            .setTitle("AI 配置")
-            .setView(dialogBinding.root)
-            .setPositiveButton("保存") { _, _ ->
-                aiConfigService.updateConfig(
-                    provider = dialogBinding.spinnerProvider.text.toString(),
-                    apiUrl = dialogBinding.etBaseUrl.text.toString(),
-                    apiKey = dialogBinding.etApiKey.text.toString(),
-                    model = dialogBinding.etModel.text.toString()
-                )
-                aiConfigService.setTgToken(dialogBinding.etTgToken.text.toString().trim())
-                val chatId = dialogBinding.etTgChatId.text.toString().trim().toLongOrNull() ?: 0L
-                aiConfigService.setTgChatId(chatId)
-            }
-            .setNegativeButton("取消", null)
-            .show()
+    private fun openAiSettings() {
+        startActivity(Intent(this, AiSettingsActivity::class.java))
     }
 
     private fun openChatActivity() {

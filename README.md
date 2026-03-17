@@ -25,7 +25,7 @@
 |------|------|
 | **🚫 无需 Root** | 纯无障碍服务实现，不依赖系统权限 |
 | **💻 无需电脑** | 完全在手机上独立运行，无需 ADB 或 PC 端配合 |
-| **🧠 AI 驱动** | 支持 Kimi（Anthropic 格式）和任意 OpenAI 兼容 API |
+| **🧠 AI 驱动** | 支持 Kimi Code（Anthropic 格式）、Moonshot 和任意 OpenAI 兼容 API |
 | **👁️ 屏幕感知** | 实时读取 UI 层次结构 + WebView/浏览器场景自动截图辅助视觉分析 |
 | **🤏 拟人操作** | 模拟点击、滑动、长按、文本输入等手势操作 |
 | **📸 多媒体能力** | 拍照、录像、录屏、截图、音量控制 |
@@ -47,7 +47,7 @@
 - **Android 版本**: Android 12 (API 31) 或更高
 - **无障碍服务**: 需要在 `设置 > 无障碍` 中手动启用
 - **悬浮窗权限**: 用于显示紧急停止按钮
-- **API Key**: 从 [Kimi](https://platform.moonshot.cn/) 或任意 OpenAI 兼容 API 提供商获取
+- **API Key**: 从 [Kimi Code](https://www.kimi.com/code/console)、[Moonshot 开放平台](https://platform.moonshot.cn/) 或任意 OpenAI 兼容 API 提供商获取
 
 ### 安装方式
 
@@ -165,12 +165,25 @@ AI 返回 JSON 操作决策
 
 ### 4. 支持的 AI 提供商
 
-| 提供商 | API 格式 | 配置示例 |
-|--------|---------|---------|
-| **Kimi** | Anthropic Messages | Base URL: `https://www.kimi.com/code/console`，Model: `kimi-k2.5` |
-| **OpenAI 兼容** | OpenAI Chat Completions | Base URL: `https://api.openai.com/v1`，Model: `gpt-4o` |
+| 提供商 | API 格式 | Base URL | 默认模型 |
+|--------|---------|----------|---------|
+| **Kimi Code** | Anthropic Messages | `https://api.kimi.com/coding` | `kimi-k2.5` |
+| **Moonshot** | OpenAI Chat Completions | `https://api.moonshot.cn/v1` | `kimi-k2-turbo-preview` |
+| **OpenAI 兼容** | OpenAI Chat Completions | `https://api.openai.com/v1` | `gpt-4o` |
 
-支持多模态输入（文本 + 截图 base64），Kimi 和 OpenAI 格式均可携带图片。
+支持多模态输入（文本 + 截图 base64），所有格式均可携带图片。
+
+#### Kimi Code 与 Moonshot API 的区别
+
+Moonshot AI 提供了两套独立的 API 服务，API Key **不通用**：
+
+| 维度 | Kimi Code API | Moonshot 开放平台 API |
+|------|--------------|---------------------|
+| **端点** | `https://api.kimi.com/coding` | `https://api.moonshot.cn/v1` |
+| **协议格式** | Anthropic Messages（`/v1/messages`） | OpenAI 兼容（`/v1/chat/completions`） |
+| **认证方式** | `x-api-key` header | `Authorization: Bearer` |
+| **API Key 获取** | [Kimi Code 会员页面](https://www.kimi.com/code/console) | [Moonshot 开放平台](https://platform.moonshot.cn/console/api-keys) |
+| **定位** | 专为 Coding Agent 优化 | 通用 LLM API |
 
 ### 5. Telegram 远程控制
 

@@ -345,7 +345,7 @@ CRITICAL: Your entire response must be parseable as JSON. Any non-JSON text will
                 .build()
 
             val systemPrompt = buildAgentSystemPrompt(userGoal, isDeviceOwner)
-            val isKimi = config.provider.equals("Kimi", ignoreCase = true)
+            val isKimi = config.provider.equals("Kimi Code", ignoreCase = true)
 
             val screenHint = if (screenshotBase64 != null) {
                 val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

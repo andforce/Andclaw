@@ -223,11 +223,14 @@ Screen capture is implemented via:
 
 ```kotlin
 ApiConfig(
-    provider = "Kimi",
+    provider = "Kimi Code",
     apiKey = BuildConfig.KIMI_KEY,
     apiUrl = "https://api.kimi.com/coding",
     model = "kimi-k2.5"
 )
 ```
 
-Supports switching to any OpenAI-compatible API via `IAiConfigService.updateConfig()`.
+Supports three providers via `IAiConfigService.updateConfig()`:
+- **Kimi Code**: Anthropic Messages format (`api.kimi.com/coding`), API Key from Kimi Code console
+- **Moonshot**: OpenAI-compatible format (`api.moonshot.cn/v1`), API Key from Moonshot platform
+- **OpenAI**: Any OpenAI-compatible API

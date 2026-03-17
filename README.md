@@ -212,6 +212,12 @@ Moonshot AI 提供了两套独立的 API 服务，API Key **不通用**：
 
 ---
 
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=andforce/Andclaw&type=Date)](https://star-history.com/#andforce/Andclaw&Date)
+
+---
+
 ## 📄 许可证
 
 本项目采用 [MIT 许可证](LICENSE) 开源。

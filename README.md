@@ -194,22 +194,22 @@ Moonshot AI 提供了两套独立的 API 服务，API Key **不通用**：
 
 ## 📋 与其他方案对比
 
-| 方案 | 无需 Root | 无需电脑 | 独立运行 | AI 驱动 |
-|-----|:--------:|:-------:|:-------:|:-------:|
-| **Andclaw** | ✅ | ✅ | ✅ | ✅ |
-| Auto.js | ✅ | ✅ | ✅ | ❌ |
-| ADB + Python | ✅ | ❌ | ❌ | 可选 |
-| Frida + 脚本 | ❌ | ❌ | ❌ | ❌ |
-| Appium | ✅ | ❌ | ❌ | 可选 |
-| UI Automator | ✅ | ❌ | ❌ | ❌ |
+| 特性 | Andclaw | [Open-AutoGLM](https://github.com/zai-org/Open-AutoGLM) | [肉包 Roubao](https://github.com/Turbo1123/roubao) | 豆包手机 |
+|-----|:-------:|:--------:|:-------:|:-------:|
+| 无需电脑 | ✅ | ❌ 需 PC 运行 Python | ✅ | ✅ |
+| 无需专用硬件 | ✅ | ✅ | ✅ | ❌ 需购买 3499 元工程机 |
+| 无需 Shizuku / ADB | ✅ 无障碍服务 | ❌ ADB 控制 | ❌ 依赖 Shizuku | ✅ |
+| 远程控制 | ✅ Telegram Bot | ❌ | ❌ | ❌ |
+| 自定义模型 | ✅ 多 Provider | ✅ | ✅ | ❌ 仅豆包 |
+| 开源 | ✅ | ✅ | ✅ | ❌ |
+| 原生 Android | ✅ Kotlin | ❌ Python | ✅ Kotlin | ✅ |
 
-**Andclaw 的独特优势**：
-- 完全在设备上运行，无需额外硬件
-- 零 Root 要求，降低使用门槛
-- 大模型决策，自适应不同应用界面
-- 自然语言交互，无需编写脚本
-- 浏览器/WebView 场景自动截图辅助视觉分析
-- 循环检测 + 截图重试，避免 Agent 死循环
+
+**Andclaw 的核心差异**：
+- **零外部依赖**：基于 Android 无障碍服务，无需 Shizuku 初始化、无需 ADB 连接、无需电脑
+- **远程控制**：通过 Telegram Bot 远程下发指令、接收截图和录像，适合无人值守场景
+- **UI 层级 + 视觉双模感知**：优先解析 Accessibility 节点树，WebView/浏览器场景自动切换截图分析
+- **循环检测 + 截图重试**：同一动作重复 5 次自动截图视觉重试，避免 Agent 死循环
 
 ---
 

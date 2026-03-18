@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         applicationId "com.andforce.andclaw"
-        minSdk 31
+        minSdk 28
         targetSdk 36
         versionCode verCode
         versionName verName

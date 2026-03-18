@@ -5,10 +5,10 @@ plugins {
 
 android {
     namespace 'com.base.services'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
-        minSdkVersion 24
+        minSdk 28
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

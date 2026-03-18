@@ -6,10 +6,10 @@ plugins {
 
 android {
     namespace 'com.afwsamples.testdpc'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
-        minSdk 31
+        minSdk 28
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

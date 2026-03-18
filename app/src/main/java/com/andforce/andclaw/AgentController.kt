@@ -159,7 +159,12 @@ object AgentController : ITgBridgeService, IAiConfigService {
         get() = getPrefs().getString("tg_token", null) ?: BuildConfig.TG_TOKEN
 
     override fun setTgToken(token: String) {
+        val oldToken = tgToken
         getPrefs().edit().putString("tg_token", token).apply()
+        if (token != oldToken) {
+            stopBridge()
+            startBridge()
+        }
     }
 
     fun getPrefs() = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

@@ -27,6 +27,7 @@ import com.afwsamples.testdpc.DevicePolicyManagerGatewayImpl
 import com.afwsamples.testdpc.databinding.ActivitySetupKioskLayoutBinding
 import com.afwsamples.testdpc.policy.locktask.viewmodule.KioskViewModule
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.base.services.IAiConfigService
 import com.base.services.ITgBridgeService
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -53,6 +54,7 @@ open class SetupKioskModeActivity : AppCompatActivity() {
 
     private val deviceStatusViewModel: DeviceStatusViewModel by inject()
 
+    private val aiConfigService: IAiConfigService by inject()
     private val tgBridgeService: ITgBridgeService by inject()
 
     private var appsActivityClickCount = 0
@@ -143,7 +145,9 @@ open class SetupKioskModeActivity : AppCompatActivity() {
                     mDevicePolicyManagerGateway?.setPasswordQuality(0, {}, {})
                     mDevicePolicyManagerGateway?.setKeyguardDisabled(true, {}, {})
 
-                    tgBridgeService.startBridge()
+                    if (aiConfigService.tgToken.isNotBlank()) {
+                        tgBridgeService.startBridge()
+                    }
                 } else {
                     tgBridgeService.stopBridge()
                 }

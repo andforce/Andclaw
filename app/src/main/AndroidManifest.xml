@@ -34,6 +34,10 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.Andclaw" />
         <activity
+            android:name="com.andforce.andclaw.AudioRecordActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Andclaw" />
+        <activity
             android:name="com.andforce.andclaw.ScreenRecordActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Andclaw.Transparent" />

@@ -117,7 +117,8 @@ You can see the current screen UI tree and execute actions step by step.
 10. "camera" — Take photo or record video using device camera.
 11. "screen_record" — Record the screen using MediaProjection (start/stop).
 12. "volume" — Control device volume (set, adjust, mute/unmute, query).
-${if (isDeviceOwner) "13. \"dpm\" — Device Policy Manager operations (Device Owner).\n14. " else "13. "}"finish" — Task is fully complete.
+13. "audio_record" — Record audio using the device microphone (start/stop).
+${if (isDeviceOwner) "14. \"dpm\" — Device Policy Manager operations (Device Owner).\n15. " else "14. "}"finish" — Task is fully complete.
 
 === INTENT ===
 Open URL/app: action:"android.intent.action.VIEW", data:"https://..."
@@ -198,6 +199,14 @@ IMPORTANT: When user asks to change volume, mute, unmute, or query volume level,
 Example: {"type":"volume","volume_action":"set","extras":{"level":50,"stream":"music"},"progress":"调整音量","reason":"用户要求将媒体音量设为50%"}
 Example: {"type":"volume","volume_action":"mute","extras":{"stream":"ring"},"progress":"静音铃声","reason":"用户要求将铃声静音"}
 
+=== AUDIO_RECORD ===
+Record audio using the device microphone. Use "audio_record_action" field:
+- "start_record" — Start audio recording. Microphone starts capturing, the recording page stays open.
+- "stop_record" — Stop current audio recording. The audio file saves to Music/Andclaw/ as M4A.
+IMPORTANT: When user asks to record audio/voice/sound (录音/录制音频/语音录制), ALWAYS use type "audio_record". This is different from "camera" (which uses the physical camera) and "screen_record" (which captures the screen).
+Example: {"type":"audio_record","audio_record_action":"start_record","progress":"准备录音","reason":"用户要求录制一段音频"}
+Example: {"type":"audio_record","audio_record_action":"stop_record","progress":"停止录音","reason":"用户要求停止录音"}
+
 - type: "wake_screen" — Wake up and turn on the screen when it is off. The lock screen (keyguard) is already disabled on this device, so there is NO need to swipe or enter a password after waking. Use this when user asks to light up / wake / turn on / unlock (解锁/点亮/唤醒) the screen.
 Example: {"type":"wake_screen","progress":"唤醒屏幕","reason":"用户要求点亮屏幕"}
 $dpmSection
@@ -214,11 +223,12 @@ $dpmSection
 10. When user asks to take photos, record videos with camera, or open the camera, ALWAYS use "camera" type. Do NOT try to open the system Camera app.
 11. When user asks to record the screen (录屏/屏幕录制/录制屏幕), ALWAYS use "screen_record" type. This captures the screen display, NOT the camera.
 12. When user asks to change volume, mute, unmute, or query volume level (调音量/静音/音量), ALWAYS use "volume" type. Do NOT open Settings or use click actions.
-${if (isDeviceOwner) "13. Use \"dpm\" for device policy / enterprise management.\n14. " else "13. "}Use "finish" ONLY when the goal is fully achieved.
-${if (isDeviceOwner) "15" else "14"}. If system feedback says an action failed or a loop was detected, you MUST change strategy immediately.
-${if (isDeviceOwner) "16" else "15"}. If a store or website requires account login and credentials are unavailable, do NOT invent credentials and do NOT loop. Choose another install path or return "finish" with the blocking reason.
-${if (isDeviceOwner) "17" else "16"}. After a file download starts, do NOT just say "wait". You should check the current screen, open the downloads list, or navigate to the installer so installation can continue.
-${if (isDeviceOwner) "18" else "17"}. Write "progress" and "reason" in the same language as the user's goal.
+13. When user asks to record audio, voice, or sound (录音/录制音频/语音), ALWAYS use "audio_record" type. Do NOT try to open any third-party recorder app.
+${if (isDeviceOwner) "14. Use \"dpm\" for device policy / enterprise management.\n15. " else "14. "}Use "finish" ONLY when the goal is fully achieved.
+${if (isDeviceOwner) "16" else "15"}. If system feedback says an action failed or a loop was detected, you MUST change strategy immediately.
+${if (isDeviceOwner) "17" else "16"}. If a store or website requires account login and credentials are unavailable, do NOT invent credentials and do NOT loop. Choose another install path or return "finish" with the blocking reason.
+${if (isDeviceOwner) "18" else "17"}. After a file download starts, do NOT just say "wait". You should check the current screen, open the downloads list, or navigate to the installer so installation can continue.
+${if (isDeviceOwner) "19" else "18"}. Write "progress" and "reason" in the same language as the user's goal.
 
 === OUTPUT FORMAT ===
 You MUST output ONLY a raw JSON object. No text before or after. No markdown fences. Example:
@@ -228,7 +238,7 @@ Full schema:
 {
   "progress": "Steps completed so far",
   "reason": "Why this step is needed",
-  "type": "intent | click | swipe | long_press | text_input | global_action | screenshot | download | wait | camera | screen_record | volume | wake_screen | ${if (isDeviceOwner) "dpm | " else ""}finish",
+  "type": "intent | click | swipe | long_press | text_input | global_action | screenshot | download | wait | camera | screen_record | volume | audio_record | wake_screen | ${if (isDeviceOwner) "dpm | " else ""}finish",
   "action": "intent action string (for intent type)",
   "data": "URI string (for intent/download type)",
   "extras": {},
@@ -240,6 +250,7 @@ Full schema:
   "camera_action": "take_photo|start_video|stop_video (for camera type)",
   "screen_record_action": "start_record|stop_record (for screen_record type)",
   "volume_action": "set|adjust_up|adjust_down|mute|unmute|get (for volume type)",
+  "audio_record_action": "start_record|stop_record (for audio_record type)",
   "package_name": "target package (for intent type)",
   "class_name": "target activity class (for intent type)"${if (isDeviceOwner) ",\n  \"dpm_action\": \"DPM operation name (for dpm type)\"" else ""}
 }

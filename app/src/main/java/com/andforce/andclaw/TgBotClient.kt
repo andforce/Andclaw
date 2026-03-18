@@ -153,4 +153,28 @@ class TgBotClient(private val token: String) {
 
         runCatching { client.newCall(req).execute().use { } }
     }
+
+    suspend fun sendAudio(
+        chatId: Long,
+        audioBytes: ByteArray,
+        caption: String? = null,
+        fileName: String = "audio.m4a"
+    ) = withContext(Dispatchers.IO) {
+        val body = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("chat_id", chatId.toString())
+            .addFormDataPart(
+                "audio", fileName,
+                audioBytes.toRequestBody("audio/mp4".toMediaType())
+            )
+            .apply { if (!caption.isNullOrEmpty()) addFormDataPart("caption", caption) }
+            .build()
+
+        val req = Request.Builder()
+            .url("$base/sendAudio")
+            .post(body)
+            .build()
+
+        runCatching { client.newCall(req).execute().use { } }
+    }
 }

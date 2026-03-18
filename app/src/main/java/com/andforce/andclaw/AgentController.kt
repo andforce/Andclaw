@@ -385,6 +385,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
             AiAction.TYPE_CAMERA,
             AiAction.TYPE_SCREEN_RECORD,
             AiAction.TYPE_VOLUME,
+            AiAction.TYPE_AUDIO_RECORD,
             AiAction.TYPE_WAKE_SCREEN -> {
                 performConfirmedAction(action)
             }
@@ -643,6 +644,54 @@ object AgentController : ITgBridgeService, IAiConfigService {
                                     }
                                 } else {
                                     outputMsg = "Camera operation timed out"
+                                }
+                            }
+                        }
+                    }
+
+                    AiAction.TYPE_AUDIO_RECORD -> {
+                        val recordAction = action.audioRecordAction
+                        if (recordAction.isNullOrEmpty()) {
+                            outputMsg = "audio_record_action field is empty"
+                        } else {
+                            AudioRecordActivity.lastResult = null
+                            val recordIntent = Intent(appContext, AudioRecordActivity::class.java).apply {
+                                putExtra(AudioRecordActivity.EXTRA_AUDIO_RECORD_ACTION, recordAction)
+                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            }
+                            appContext.startActivity(recordIntent)
+
+                            if (recordAction == AudioRecordActivity.ACTION_START_RECORD) {
+                                delay(3000)
+                                success = true
+                                outputMsg = AudioRecordActivity.lastResult ?: "Audio recording started"
+                            } else {
+                                var waited = 0L
+                                while (AudioRecordActivity.lastResult == null && waited < 15000) {
+                                    delay(500)
+                                    waited += 500
+                                }
+                                val result = AudioRecordActivity.lastResult
+                                if (result != null) {
+                                    success = true
+                                    outputMsg = result
+
+                                    if (tgActiveChatId != 0L && tgBotClient != null) {
+                                        val uri = AudioRecordActivity.lastAudioUri
+                                        if (uri != null) {
+                                            try {
+                                                appContext.contentResolver.openInputStream(uri)?.use { input ->
+                                                    tgBotClient?.sendAudio(
+                                                        tgActiveChatId, input.readBytes(),
+                                                        "audio.m4a", "audio.m4a"
+                                                    )
+                                                    outputMsg += " (已发送到 Telegram)"
+                                                }
+                                            } catch (_: Exception) { }
+                                        }
+                                    }
+                                } else {
+                                    outputMsg = "Audio record operation timed out"
                                 }
                             }
                         }

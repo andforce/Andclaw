@@ -89,7 +89,10 @@ data class AiAction(
     val screenRecordAction: String? = null,
 
     @SerializedName("volume_action")
-    val volumeAction: String? = null
+    val volumeAction: String? = null,
+
+    @SerializedName("audio_record_action")
+    val audioRecordAction: String? = null
 ) {
     companion object {
         const val TYPE_INTENT = "intent"
@@ -105,6 +108,7 @@ data class AiAction(
         const val TYPE_CAMERA = "camera"
         const val TYPE_SCREEN_RECORD = "screen_record"
         const val TYPE_VOLUME = "volume"
+        const val TYPE_AUDIO_RECORD = "audio_record"
         const val TYPE_WAKE_SCREEN = "wake_screen"
         const val TYPE_FINISH = "finish"
         const val TYPE_ERROR = "error"

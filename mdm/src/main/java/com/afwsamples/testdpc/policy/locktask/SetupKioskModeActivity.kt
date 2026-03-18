@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.UserManager
@@ -222,7 +223,7 @@ open class SetupKioskModeActivity : AppCompatActivity() {
             return
         }
 
-        if (!Environment.isExternalStorageManager()) {
+        if (requiresManageAllFilesAccessPermission() && !Environment.isExternalStorageManager()) {
             showPermissionGuideDialog(
                 title = "需要文件访问权限",
                 message = "Andclaw 需要「所有文件访问」权限来读取下载目录中的 APK 文件并执行静默安装。",
@@ -309,4 +310,8 @@ open class SetupKioskModeActivity : AppCompatActivity() {
         }
     }
 
+}
+
+internal fun requiresManageAllFilesAccessPermission(sdkInt: Int = Build.VERSION.SDK_INT): Boolean {
+    return sdkInt >= Build.VERSION_CODES.R
 }

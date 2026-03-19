@@ -17,6 +17,11 @@
   <a href="https://andclaw.app/#/install"><b>📲 在线安装 APK</b></a>
 </p>
 
+<p align="center">
+  <b>💬 微信群</b>（扫码加入 Andclaw 群聊）<br>
+  <img src="docs/8c41dc3ccb6192c59ff6d9e08d3c02c0.jpg" alt="Andclaw 微信群二维码" width="200">
+</p>
+
 ---
 
 ## 🌟 核心亮点

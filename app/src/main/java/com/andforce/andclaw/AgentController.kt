@@ -7,17 +7,18 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.util.DisplayMetrics
 import android.media.AudioManager
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import android.view.WindowManager
 import com.andforce.andclaw.model.AgentUiState
 import com.andforce.andclaw.model.AiAction
 import com.andforce.andclaw.model.ApiConfig
 import com.andforce.andclaw.model.ChatMessage
 import com.afwsamples.testdpc.common.Util
-import com.google.gson.Gson
 import com.base.services.IAiConfigService
 import com.base.services.ITgBridgeService
 import kotlinx.coroutines.*
@@ -35,11 +36,15 @@ object AgentController : ITgBridgeService, IAiConfigService {
 
     private const val TAG = "AgentController"
     private const val PREFS_NAME = "agent_config"
+    private const val KEY_PROVIDER = "provider"
+    private const val KEY_API_URL = "api_url"
+    private const val KEY_API_KEY = "api_key"
+    private const val KEY_MODEL = "model"
+    private const val KEY_TG_ALLOWED_CHAT_ID = "tg_allowed_chat_id"
+    private const val KEY_TG_TOKEN = "tg_token"
 
     private lateinit var appContext: Context
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
-    private val gson = Gson()
-
     private var tgJob: Job? = null
     private var tgBotClient: TgBotClient? = null
     var tgActiveChatId: Long = 0L
@@ -47,21 +52,35 @@ object AgentController : ITgBridgeService, IAiConfigService {
 
     private val _messages = MutableStateFlow<List<ChatMessage>>(emptyList())
     val messages: StateFlow<List<ChatMessage>> = _messages
+    private val _uiState = MutableStateFlow(AgentUiState())
+    val uiStateFlow: StateFlow<AgentUiState> = _uiState
 
     var config = ApiConfig(apiKey = BuildConfig.KIMI_KEY)
         private set
     var isAgentRunning = false
         private set
     private var agentJob: Job? = null
+    private var currentTaskStartIndex = 0
     private var consecutiveSameCount = 0
     private var lastFingerprint = ""
     private var loopRetryCount = 0
-    private var uiState = AgentUiState()
+    private var uiState = _uiState.value
+        set(value) {
+            field = value
+            _uiState.value = value
+        }
 
     private val dpmBridge by lazy { DpmBridge(appContext) }
 
+    private data class IntentExecutionResult(
+        val success: Boolean,
+        val message: String? = null
+    )
+
     fun init(context: Context) {
         appContext = context.applicationContext
+        config = loadConfig()
+        uiState = uiState.copy(aiProvider = config.provider)
     }
 
     override val provider: String get() = config.provider
@@ -72,22 +91,47 @@ object AgentController : ITgBridgeService, IAiConfigService {
 
     override fun updateConfig(provider: String, apiUrl: String, apiKey: String, model: String) {
         config = config.copy(provider = provider, apiUrl = apiUrl, apiKey = apiKey, model = model)
+        persistConfig(config)
+        uiState = uiState.copy(aiProvider = provider)
     }
 
-    override fun getTgChatId(): Long = getPrefs().getLong("tg_allowed_chat_id", 0L)
+    override fun getTgChatId(): Long = getPrefs().getLong(KEY_TG_ALLOWED_CHAT_ID, 0L)
 
     override fun setTgChatId(chatId: Long) {
-        getPrefs().edit().putLong("tg_allowed_chat_id", chatId).apply()
+        getPrefs().edit().putLong(KEY_TG_ALLOWED_CHAT_ID, chatId).apply()
     }
 
     override val tgToken: String
-        get() = getPrefs().getString("tg_token", null) ?: BuildConfig.TG_TOKEN
+        get() = getPrefs().getString(KEY_TG_TOKEN, null) ?: BuildConfig.TG_TOKEN
 
     override fun setTgToken(token: String) {
-        getPrefs().edit().putString("tg_token", token).apply()
+        getPrefs().edit().putString(KEY_TG_TOKEN, token).apply()
     }
 
     fun getPrefs() = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    private fun loadConfig(): ApiConfig {
+        val prefs = getPrefs()
+        return config.copy(
+            provider = prefs.getString(KEY_PROVIDER, config.provider) ?: config.provider,
+            apiUrl = prefs.getString(KEY_API_URL, config.apiUrl) ?: config.apiUrl,
+            apiKey = if (prefs.contains(KEY_API_KEY)) {
+                prefs.getString(KEY_API_KEY, config.apiKey) ?: ""
+            } else {
+                config.apiKey
+            },
+            model = prefs.getString(KEY_MODEL, config.model) ?: config.model
+        )
+    }
+
+    private fun persistConfig(config: ApiConfig) {
+        getPrefs().edit()
+            .putString(KEY_PROVIDER, config.provider)
+            .putString(KEY_API_URL, config.apiUrl)
+            .putString(KEY_API_KEY, config.apiKey)
+            .putString(KEY_MODEL, config.model)
+            .apply()
+    }
 
     // --- ITgBridgeService ---
 
@@ -101,7 +145,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
         tgJob = scope.launch(Dispatchers.IO) {
             while (isActive) {
                 try {
-                    val allowedChatId = getPrefs().getLong("tg_allowed_chat_id", 0L)
+                    val allowedChatId = getPrefs().getLong(KEY_TG_ALLOWED_CHAT_ID, 0L)
                     val updates = tgBotClient?.poll() ?: emptyList()
                     for (msg in updates) {
                         if (allowedChatId != 0L && msg.chatId != allowedChatId) continue
@@ -123,7 +167,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
         tgActiveChatId = chatId
         when (text) {
             "/status" -> {
-                val allowedId = getPrefs().getLong("tg_allowed_chat_id", 0L)
+                val allowedId = getPrefs().getLong(KEY_TG_ALLOWED_CHAT_ID, 0L)
                 val accessInfo = if (allowedId == 0L) "⚠️ 未设置 Chat ID 白名单" else "✅ Chat ID 已锁定"
                 val agentInfo = if (isAgentRunning) "▶️ Agent 运行中: ${uiState.userInput}" else "⏸ Agent 空闲"
                 tgBotClient?.send(chatId, "Andclaw 状态\n$agentInfo\n$accessInfo\n你的 Chat ID: $chatId", msgId)
@@ -141,9 +185,16 @@ object AgentController : ITgBridgeService, IAiConfigService {
     // --- Agent Logic ---
 
     fun startAgent(input: String) {
+        if (input.isBlank() || isAgentRunning) return
+
+        currentTaskStartIndex = _messages.value.size
         addMessage("user", input)
         isAgentRunning = true
-        uiState = uiState.copy(isRunning = true, userInput = input)
+        uiState = uiState.copy(
+            isRunning = true,
+            status = "Agent Running...",
+            userInput = input
+        )
         consecutiveSameCount = 0
         lastFingerprint = ""
         loopRetryCount = 0
@@ -167,34 +218,12 @@ object AgentController : ITgBridgeService, IAiConfigService {
         val screenData = svc?.captureScreenHierarchy() ?: "Screen data inaccessible"
 
         var finalScreenshot = screenshotBase64
-        if (finalScreenshot == null && svc?.isWebViewContext() == true) {
+        val isKimi = config.provider.equals("Kimi Code", ignoreCase = true)
+        if (finalScreenshot == null && (svc?.isWebViewContext() == true || isKimi)) {
             finalScreenshot = captureScreenBase64()
         }
 
-        val currentMessages = _messages.value
-        val historyContext = currentMessages.takeLast(12).mapNotNull {
-            when (it.role) {
-                "user" -> mapOf("role" to "user", "content" to it.content)
-                "ai" -> it.action?.let { action ->
-                    mapOf("role" to "assistant", "content" to gson.toJson(action))
-                }
-                "system" -> {
-                    val content = it.content
-                    val shouldKeep = content.startsWith("Intent failed:") ||
-                        content.startsWith("Loop detected") ||
-                        content.startsWith("Execution Exception:") ||
-                        content.startsWith("Error occurred:") ||
-                        content.startsWith("AI Request Failed:") ||
-                        (content.startsWith("Action success.") && content.contains("\n"))
-                    if (shouldKeep) {
-                        mapOf("role" to "user", "content" to "System feedback: $content")
-                    } else {
-                        null
-                    }
-                }
-                else -> null
-            }
-        }
+        val historyContext = AgentConversationContext.buildHistory(_messages.value, currentTaskStartIndex)
 
         try {
             val isDeviceOwner = Util.isDeviceOwner(appContext)
@@ -268,17 +297,24 @@ object AgentController : ITgBridgeService, IAiConfigService {
 
         when (action.type) {
             AiAction.TYPE_INTENT -> {
-                addMessage("ai", action.reason ?: "I will use a system shortcut.", action)
-                executeIntent(action)
+                val intentResult = executeIntent(action)
+                if (!intentResult.success) {
+                    addMessage("system", intentResult.message ?: "Intent failed.")
+                    scope.launch {
+                        delay(1500)
+                        executeAgentStep(uiState.userInput)
+                    }
+                    return
+                }
 
                 val isTerminal = action.action?.let {
                     it.contains("ALARM") || it.contains("SEND")
                 } ?: false
                 if (isTerminal) {
-                    addMessage("system", "Task dispatched via system.")
+                    addMessage("system", intentResult.message ?: "Task dispatched via system.")
                     stopAgent()
                 } else {
-                    addMessage("system", "App opened, checking next step...")
+                    addMessage("system", intentResult.message ?: "App opened, checking next step...")
                     isAgentRunning = true
                     scope.launch {
                         delay(3000)
@@ -345,10 +381,16 @@ object AgentController : ITgBridgeService, IAiConfigService {
             try {
                 when (action.type) {
                     AiAction.TYPE_CLICK -> {
-                        withContext(Dispatchers.Main) {
-                            AgentAccessibilityService.instance?.click(action.x, action.y)
+                        val svc = AgentAccessibilityService.instance
+                        if (svc == null) {
+                            outputMsg = "Accessibility service not running"
+                        } else {
+                            val result = withContext(Dispatchers.Main) {
+                                svc.click(action.x, action.y)
+                            }
+                            success = result
+                            if (!result) outputMsg = "Failed to dispatch click gesture"
                         }
-                        success = true
                     }
 
                     AiAction.TYPE_SWIPE -> {
@@ -357,10 +399,11 @@ object AgentController : ITgBridgeService, IAiConfigService {
                             outputMsg = "Accessibility service not running"
                         } else {
                             val dur = if (action.duration > 0) action.duration else 300L
-                            withContext(Dispatchers.Main) {
+                            val result = withContext(Dispatchers.Main) {
                                 svc.swipe(action.x, action.y, action.endX, action.endY, dur)
                             }
-                            success = true
+                            success = result
+                            if (!result) outputMsg = "Failed to dispatch swipe gesture"
                         }
                     }
 
@@ -370,10 +413,11 @@ object AgentController : ITgBridgeService, IAiConfigService {
                             outputMsg = "Accessibility service not running"
                         } else {
                             val dur = if (action.duration > 0) action.duration else 1000L
-                            withContext(Dispatchers.Main) {
+                            val result = withContext(Dispatchers.Main) {
                                 svc.longPress(action.x, action.y, dur)
                             }
-                            success = true
+                            success = result
+                            if (!result) outputMsg = "Failed to dispatch long press gesture"
                         }
                     }
 
@@ -409,8 +453,9 @@ object AgentController : ITgBridgeService, IAiConfigService {
                                 }
                             }
                             if (actionId >= 0) {
-                                withContext(Dispatchers.Main) { svc.globalAction(actionId) }
-                                success = true
+                                val result = withContext(Dispatchers.Main) { svc.globalAction(actionId) }
+                                success = result
+                                if (!result) outputMsg = "Failed to perform global action: ${action.globalAction}"
                             }
                         }
                     }
@@ -599,9 +644,45 @@ object AgentController : ITgBridgeService, IAiConfigService {
                                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                                 appContext.startActivity(recordIntent)
-                                delay(1500)
-                                success = true
-                                outputMsg = "录屏授权对话框已弹出，请在下一步点击「立即开始」按钮完成授权"
+                                delay(1200)
+
+                                val autoConfirmed = withContext(Dispatchers.Main) {
+                                    AgentAccessibilityService.instance?.clickNodeByText(
+                                        "立即开始",
+                                        "Start now",
+                                        "Start"
+                                    ) ?: false
+                                }
+                                if (autoConfirmed) {
+                                    addMessage("system", "已自动点击录屏授权按钮，等待录屏启动...")
+                                }
+
+                                var waited = 0L
+                                while (!ScreenRecordService.isRecording && waited < 8000L) {
+                                    if (waited >= 1600L && waited % 1200L == 0L) {
+                                        val retried = withContext(Dispatchers.Main) {
+                                            val svc = AgentAccessibilityService.instance
+                                            when {
+                                                svc == null -> false
+                                                svc.clickNodeByText("立即开始", "Start now", "Start") -> true
+                                                else -> clickScreenRecordPermissionFallback(svc)
+                                            }
+                                        }
+                                        if (retried) {
+                                            addMessage("system", "已尝试兜底点击录屏授权确认按钮...")
+                                        }
+                                    }
+                                    delay(400)
+                                    waited += 400
+                                }
+
+                                if (ScreenRecordService.isRecording) {
+                                    success = true
+                                    outputMsg = "录屏已开始"
+                                } else {
+                                    success = true
+                                    outputMsg = "录屏授权对话框已弹出，请在下一步点击「立即开始」按钮完成授权"
+                                }
                             }
                         }
                     }
@@ -693,7 +774,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
         }
     }
 
-    private fun executeIntent(action: AiAction) {
+    private fun executeIntent(action: AiAction): IntentExecutionResult {
         try {
             Intent(action.action).let { intent ->
                 if (!action.data.isNullOrEmpty()) {
@@ -707,10 +788,31 @@ object AgentController : ITgBridgeService, IAiConfigService {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 action.fillIntentExtras(intent)
                 appContext.startActivity(intent)
+                val message = if (!action.packageName.isNullOrEmpty()) {
+                    "Intent launched: ${action.packageName}"
+                } else if (!action.data.isNullOrEmpty()) {
+                    "Intent launched: ${action.data}"
+                } else {
+                    "Intent launched: ${action.action}"
+                }
+                return IntentExecutionResult(success = true, message = message)
             }
         } catch (e: Exception) {
-            addMessage("system", "Intent failed: ${e.message}")
+            return IntentExecutionResult(success = false, message = "Intent failed: ${e.message}")
         }
+        return IntentExecutionResult(success = false, message = "Intent failed: empty intent")
+    }
+
+    private fun clickScreenRecordPermissionFallback(service: AgentAccessibilityService): Boolean {
+        val wm = appContext.getSystemService(Context.WINDOW_SERVICE) as? WindowManager ?: return false
+        val metrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        wm.defaultDisplay.getRealMetrics(metrics)
+
+        val confirmX = (metrics.widthPixels * 0.72f).toInt()
+        val confirmY = (metrics.heightPixels * 0.88f).toInt()
+        service.click(confirmX, confirmY)
+        return true
     }
 
     // --- Helpers ---

@@ -22,5 +22,50 @@
         android:clipToPadding="false"
         android:padding="8dp" />
 
+    <TextView
+        android:id="@+id/tvAgentStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:text="本地输入任务，直接在手机上启动 Agent"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputPromptLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="例如：打开设置查看电池页面">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top|start"
+                android:imeOptions="actionSend"
+                android:inputType="textCapSentences|textMultiLine"
+                android:maxLines="3"
+                android:minLines="2" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnStartStop"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="发送" />
+    </LinearLayout>
 
 </LinearLayout>

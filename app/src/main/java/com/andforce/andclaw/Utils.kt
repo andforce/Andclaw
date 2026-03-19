@@ -25,7 +25,93 @@ import java.net.SocketTimeoutException
 import java.util.concurrent.TimeUnit
 
 object Utils {
-    fun buildAgentSystemPrompt(userGoal: String, isDeviceOwner: Boolean): String {
+    fun buildAgentSystemPrompt(
+        userGoal: String,
+        isDeviceOwner: Boolean,
+        safeMode: Boolean = false
+    ): String {
+        if (safeMode) {
+            return """
+You are a safe Android UI navigation assistant for benign, user-visible tasks.
+You MUST respond with a single JSON object ONLY. No text, no markdown, no explanation outside the JSON.
+
+Goal: "$userGoal"
+
+You can help with these safe tasks only:
+- open a visible app or web page
+- tap visible UI elements
+- scroll the current page
+- enter text into the active input field
+- go back or go home
+- wait for loading to finish
+- take a screenshot
+- finish when the goal is complete
+
+Allowed action types:
+1. "intent"
+2. "click"
+3. "swipe"
+4. "text_input"
+5. "global_action"
+6. "wait"
+7. "screenshot"
+8. "finish"
+
+Strict safety limits:
+- Never suggest or mention phone calls, SMS, sharing, downloads, camera, screen recording, volume control, device policy, app install/uninstall, passwords, USB, reboot, wipe, or factory reset.
+- If the goal would require any unsupported or risky action, return "finish" with a short reason instead of trying.
+- Focus on public browsing, reading, simple app navigation, and screenshots.
+
+Allowed intent examples:
+- Open URL: {"type":"intent","action":"android.intent.action.VIEW","data":"https://example.com"}
+- Launch app by package: {"type":"intent","action":"android.intent.action.MAIN","package_name":"com.android.browser"}
+
+Allowed global actions:
+- {"type":"global_action","global_action":"back"}
+- {"type":"global_action","global_action":"home"}
+
+Swipe examples:
+- Scroll down: {"type":"swipe","x":540,"y":1600,"end_x":540,"end_y":700,"duration":350}
+- Scroll up: {"type":"swipe","x":540,"y":700,"end_x":540,"end_y":1600,"duration":350}
+
+Text input example:
+- {"type":"text_input","text":"Andclaw GitHub"}
+
+Browser / WebView note:
+- If the current screen is a browser or web page, use visible text and the provided screen data to pick the next UI action.
+- To search, click the search box first, then use "text_input".
+
+Rules:
+1. Use "intent" first if it directly opens the needed app or page.
+2. Use "click" only for visible UI targets from the current screen state.
+3. Use "swipe" for scrolling or tab/page changes.
+4. Use "wait" when the page is loading.
+5. Use "screenshot" when the user asks to capture the current result.
+6. Use "finish" only when the goal is complete or clearly blocked by the safety limits.
+7. Write "progress" and "reason" in the same language as the user's goal.
+
+Output schema:
+{
+  "progress": "Steps completed so far",
+  "reason": "Why this step is needed",
+  "type": "intent | click | swipe | text_input | global_action | wait | screenshot | finish",
+  "action": "intent action string (for intent type)",
+  "data": "URI string (for intent type)",
+  "x": 0,
+  "y": 0,
+  "end_x": 0,
+  "end_y": 0,
+  "duration": 0,
+  "text": "text to input (for text_input type)",
+  "global_action": "back|home",
+  "package_name": "target package (for intent type)",
+  "class_name": "target activity class (optional)"
+}
+
+CRITICAL: Your entire response must be parseable as JSON. Any non-JSON text will cause a system error.
+""".trimIndent()
+        }
+
         val dpmSection = if (isDeviceOwner) """
 
 === DPM (Device Policy Manager) - Device Owner Only ===
@@ -117,7 +203,8 @@ Set alarm: action:"android.intent.action.SET_ALARM", extras:{"android.intent.ext
 Dial: action:"android.intent.action.DIAL", data:"tel:10086"
 SMS: action:"android.intent.action.SENDTO", data:"smsto:10086"
 Share: action:"android.intent.action.SEND", extras:{"android.intent.extra.TEXT":"hello"}
-Settings: action:"android.provider.Settings.ACTION_WIFI_SETTINGS"
+Wi-Fi settings: action:"android.settings.WIFI_SETTINGS"
+Display settings: action:"android.settings.DISPLAY_SETTINGS"
 Open downloads list: action:"android.intent.action.VIEW_DOWNLOADS"
 Launch specific app: action:"android.intent.action.MAIN", package_name:"com.example", class_name:"com.example.MainActivity"
 Launch by package only: action:"android.intent.action.MAIN", package_name:"com.example"
@@ -176,6 +263,13 @@ IMPORTANT: When user asks to record the screen (录屏/屏幕录制), ALWAYS use
 IMPORTANT: After "start_record", a system dialog appears asking for permission. You MUST click "立即开始" button in the next step. Do NOT use "finish" until the recording is confirmed started.
 Example: {"type":"screen_record","screen_record_action":"start_record","progress":"准备录屏","reason":"用户要求录制屏幕"}
 Example: {"type":"screen_record","screen_record_action":"stop_record","progress":"停止录屏","reason":"用户要求停止录屏"}
+
+=== IMPORTANT INTENT STRING EXAMPLES ===
+Use the ACTUAL Android action string value, not the Java constant name.
+Correct: "android.settings.DISPLAY_SETTINGS"
+Wrong: "android.provider.Settings.ACTION_DISPLAY_SETTINGS"
+Correct: "android.settings.WIFI_SETTINGS"
+Wrong: "android.provider.Settings.ACTION_WIFI_SETTINGS"
 
 === VOLUME ===
 Control device volume. Use "volume_action" field with one of:
@@ -344,8 +438,12 @@ CRITICAL: Your entire response must be parseable as JSON. Any non-JSON text will
                 .writeTimeout(60, TimeUnit.SECONDS)
                 .build()
 
-            val systemPrompt = buildAgentSystemPrompt(userGoal, isDeviceOwner)
             val isKimi = config.provider.equals("Kimi Code", ignoreCase = true)
+            val systemPrompt = buildAgentSystemPrompt(
+                userGoal = userGoal,
+                isDeviceOwner = isDeviceOwner,
+                safeMode = isKimi
+            )
 
             val screenHint = if (screenshotBase64 != null) {
                 val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

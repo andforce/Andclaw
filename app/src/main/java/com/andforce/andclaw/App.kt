@@ -3,6 +3,7 @@ package com.andforce.andclaw
 import android.app.admin.DevicePolicyManager
 import android.util.Log
 import com.afwsamples.testdpc.KoinApplication
+import com.afwsamples.testdpc.policy.locktask.AndclawDeviceOwnerBootstrap
 import com.afwsamples.testdpc.policy.locktask.KioskModeHelper
 import com.afwsamples.testdpc.policy.locktask.viewmodule.KioskViewModule
 import com.andforce.andclaw.service.impl.AppInfoService
@@ -66,6 +67,10 @@ class App : KoinApplication() {
                         Log.d(TAG, "用户策略：自动授权权限")
                         devicePolicyManager.setPermissionPolicy(adminComponentName,
                             DevicePolicyManager.PERMISSION_POLICY_AUTO_GRANT)
+                    }
+                    val bootstrapResult = AndclawDeviceOwnerBootstrap.apply(this@App)
+                    if (bootstrapResult.failures.isNotEmpty()) {
+                        Log.w(TAG, "bootstrap failures: ${bootstrapResult.failures}")
                     }
 
                     KioskModeHelper.setDefaultKioskPolicies(isDeviceOwner)

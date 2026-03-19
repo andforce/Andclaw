@@ -39,7 +39,7 @@ class ActionTestActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "ActionTest"
         private const val TEST_DOWNLOAD_URL =
-            "https://raw.githubusercontent.com/nicehash/NiceHashQuickMiner/main/LICENSE"
+            "https://www.baidu.com/robots.txt"
     }
 
     private lateinit var binding: ActivityActionTestBinding

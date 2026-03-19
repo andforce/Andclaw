@@ -107,6 +107,8 @@
    - ✅ **Kiosk 模式**：单应用锁定（Lock Task）、替换默认桌面、禁止安全模式/恢复出厂
 
    > 详细能力清单见 [ACTIONS.md](./ACTIONS.md)
+   >
+   > 实机恢复出厂后的完整落地流程、验收脚本和小米 / MIUI 踩坑记录见 [docs/device-owner/README.md](./docs/device-owner/README.md)。
 
 6. **创建 Telegram 机器人**
 

@@ -94,8 +94,6 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
     testImplementation 'org.robolectric:robolectric:4.11.1'
-    testImplementation 'org.robolectric:robolectric-annotations:4.6.1'
-    testImplementation 'org.robolectric:shadows-core:4.6.1'
 
 
     // Gson

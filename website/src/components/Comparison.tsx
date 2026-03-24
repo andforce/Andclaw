@@ -13,7 +13,7 @@ const features: { label: string; values: CellValue[] }[] = [
   { label: '无需电脑',        values: [{ ok: true }, { ok: false, note: '需 PC 运行 Python' }, { ok: true }, { ok: true }] },
   { label: '无需专用硬件',    values: [{ ok: true }, { ok: true }, { ok: true }, { ok: false, note: '需购买 3499 元工程机' }] },
   { label: '无需 Shizuku / ADB', values: [{ ok: true, note: '无障碍服务' }, { ok: false, note: 'ADB 控制' }, { ok: false, note: '依赖 Shizuku' }, { ok: true }] },
-  { label: '远程控制',        values: [{ ok: true, note: 'Telegram Bot' }, { ok: false }, { ok: false }, { ok: false }] },
+  { label: '远程控制',        values: [{ ok: true, note: 'Telegram / 微信 ClawBot' }, { ok: false }, { ok: false }, { ok: false }] },
   { label: '自定义模型',      values: [{ ok: true, note: '多 Provider' }, { ok: true }, { ok: true }, { ok: false, note: '仅豆包' }] },
   { label: '开源',            values: [{ ok: true }, { ok: true }, { ok: true }, { ok: false }] },
   { label: '原生 Android',    values: [{ ok: true, note: 'Kotlin' }, { ok: false, note: 'Python' }, { ok: true, note: 'Kotlin' }, { ok: true }] },
@@ -85,7 +85,7 @@ export default function Comparison() {
         <div className={`fade-in-up mt-12 grid grid-cols-1 sm:grid-cols-2 gap-4 ${isVisible ? 'is-visible' : ''}`} style={{ transitionDelay: '200ms' }}>
           {[
             { title: '零外部依赖', desc: '基于 Android 无障碍服务，无需 Shizuku、ADB 或电脑' },
-            { title: '远程控制', desc: '通过 Telegram Bot 远程下发指令、接收截图和录像' },
+            { title: '远程控制', desc: '支持 Telegram Bot 与微信 ClawBot 双通道，适配不同远程控制场景' },
             { title: 'UI 层级 + 视觉双模感知', desc: '优先解析 Accessibility 节点树，WebView 场景自动切换截图分析' },
             { title: '循环检测 + 截图重试', desc: '同一动作重复 5 次自动截图视觉重试，避免 Agent 死循环' },
           ].map((item, i) => (

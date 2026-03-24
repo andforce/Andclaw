@@ -28,7 +28,7 @@ const actions: Record<Category, { name: string; desc: string; code: string }[]> 
     { name: 'download', desc: '通过 URL 直接下载文件', code: '{"type":"download","data":"https://example.com/file.apk"}' },
   ],
   media: [
-    { name: 'screenshot', desc: '截图并保存到相册', code: '{"type":"screenshot"}' },
+    { name: 'screenshot', desc: '截图并保存到相册；Telegram 可远程收图，微信 ClawBot 当前返回文本说明', code: '{"type":"screenshot"}' },
     { name: 'take_photo', desc: '拍照并保存', code: '{"type":"camera","camera_action":"take_photo"}' },
     { name: 'start_video', desc: '开始录像', code: '{"type":"camera","camera_action":"start_video"}' },
     { name: 'stop_video', desc: '停止录像并保存', code: '{"type":"camera","camera_action":"stop_video"}' },

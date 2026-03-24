@@ -27,8 +27,8 @@ const features = [
   },
   {
     icon: <TelegramIcon />,
-    title: '远程控制',
-    desc: '通过 Telegram Bot 远程下发指令，实时接收截图和录像，不在身边也能操控设备。',
+    title: '远程双通道',
+    desc: '支持 Telegram Bot 与微信 ClawBot 远程接入；Telegram 可直接接收媒体文件，ClawBot 当前提供文本回执与状态反馈。',
     color: 'purple' as const,
   },
   {

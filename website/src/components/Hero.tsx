@@ -28,7 +28,7 @@ export default function Hero() {
 
         {/* badges */}
         <div className="flex flex-wrap justify-center gap-3 mb-10">
-          {['无需 Root', '无需电脑', '完全在设备上运行'].map((text) => (
+          {['无需 Root', '无需电脑', '完全在设备上运行', '支持微信 ClawBot'].map((text) => (
             <span
               key={text}
               className="px-4 py-1.5 rounded-full text-sm font-medium border border-neon-purple/30 text-neon-purple bg-neon-purple/5"
@@ -37,6 +37,11 @@ export default function Hero() {
             </span>
           ))}
         </div>
+
+        <p className="text-sm md:text-base text-gray-400 mb-10 max-w-2xl leading-relaxed">
+          支持本地直接操控，也支持通过 Telegram Bot 与微信 ClawBot 远程下发指令。
+          其中 Telegram 可直接回传截图/录像文件，微信 ClawBot 当前以文本回执为主。
+        </p>
 
         {/* CTA buttons */}
         <div className="flex flex-col sm:flex-row gap-4">

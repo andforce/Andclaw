@@ -93,19 +93,53 @@ class ChatAdapter(
             binding.cbSelect.isChecked = selectedIds.contains(msg.id)
             binding.cbSelect.setOnClickListener { toggleSelection(msg.id) }
 
+            // 设置气泡位置
             val lp = binding.bubbleContainer.layoutParams as FrameLayout.LayoutParams
             lp.gravity = if (isUser) Gravity.END else Gravity.START
             binding.bubbleContainer.layoutParams = lp
 
-            val bgColor = when {
-                isSystem -> ContextCompat.getColor(ctx, R.color.bubble_system)
-                isAi -> ContextCompat.getColor(ctx, R.color.bubble_ai)
-                else -> ContextCompat.getColor(ctx, R.color.bubble_user)
+            // 设置气泡背景和边距
+            when {
+                isUser -> {
+                    // 用户气泡 - 渐变蓝色背景
+                    binding.bubbleCard.setBackgroundResource(R.drawable.bg_bubble_user)
+                    binding.bubbleCard.strokeWidth = 0
+                    binding.bubbleCard.radius = ctx.resources.getDimension(R.dimen.bubble_corner_radius)
+                    binding.tvContent.setTextColor(ContextCompat.getColor(ctx, R.color.on_bubble_user))
+                    // 用户气泡起始边距更大（靠右）
+                    binding.bubbleContainer.layoutParams = (binding.bubbleContainer.layoutParams as FrameLayout.LayoutParams).apply {
+                        marginStart = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xl)
+                        marginEnd = ctx.resources.getDimensionPixelSize(R.dimen.spacing_md)
+                    }
+                }
+                isAi -> {
+                    // AI 气泡 - 深灰卡片
+                    binding.bubbleCard.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.bubble_ai))
+                    binding.bubbleCard.strokeColor = ContextCompat.getColor(ctx, R.color.bubble_ai_border)
+                    binding.bubbleCard.strokeWidth = 1
+                    binding.bubbleCard.radius = ctx.resources.getDimension(R.dimen.bubble_corner_radius)
+                    binding.tvContent.setTextColor(ContextCompat.getColor(ctx, R.color.on_bubble_ai))
+                    binding.bubbleContainer.layoutParams = (binding.bubbleContainer.layoutParams as FrameLayout.LayoutParams).apply {
+                        marginStart = ctx.resources.getDimensionPixelSize(R.dimen.spacing_md)
+                        marginEnd = ctx.resources.getDimensionPixelSize(R.dimen.spacing_xl)
+                    }
+                }
+                else -> {
+                    // 系统气泡 - 最深灰色
+                    binding.bubbleCard.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.bubble_system))
+                    binding.bubbleCard.strokeWidth = 0
+                    binding.bubbleCard.radius = ctx.resources.getDimension(R.dimen.radius_lg)
+                    binding.tvContent.setTextColor(ContextCompat.getColor(ctx, R.color.on_bubble_system))
+                    binding.bubbleContainer.layoutParams = (binding.bubbleContainer.layoutParams as FrameLayout.LayoutParams).apply {
+                        marginStart = ctx.resources.getDimensionPixelSize(R.dimen.spacing_md)
+                        marginEnd = ctx.resources.getDimensionPixelSize(R.dimen.spacing_md)
+                    }
+                }
             }
-            binding.bubbleCard.setCardBackgroundColor(bgColor)
 
             binding.tvContent.text = msg.content
 
+            // 截图显示
             if (msg.screenshotBase64 != null) {
                 binding.ivScreenshot.visibility = View.VISIBLE
                 try {
@@ -120,6 +154,7 @@ class ChatAdapter(
                 binding.ivScreenshot.setImageDrawable(null)
             }
 
+            // 操作信息显示
             val action = msg.action
             if (action != null) {
                 binding.divider.visibility = View.VISIBLE
@@ -131,7 +166,7 @@ class ChatAdapter(
                         binding.tvActionDetail.visibility = View.VISIBLE
                         binding.tvActionDetail.text = "坐标: (${action.x}, ${action.y})"
                         binding.tvActionDetail.setTextColor(
-                            ContextCompat.getColor(ctx, R.color.gray)
+                            ContextCompat.getColor(ctx, R.color.text_secondary)
                         )
                     }
                     else -> {
@@ -152,10 +187,11 @@ class ChatAdapter(
                 binding.btnExecute.visibility = View.GONE
             }
 
+            // 时间戳
             binding.tvTimestamp.text = SimpleDateFormat("HH:mm", Locale.getDefault())
                 .format(Date(msg.timestamp))
 
-            // 长按进入选择模式 / 选择模式下点击切换
+            // 长按进入选择模式
             itemView.setOnLongClickListener {
                 if (!isSelectionMode) {
                     enterSelectionMode(msg.id)

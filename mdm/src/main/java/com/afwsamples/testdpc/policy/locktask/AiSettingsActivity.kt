@@ -67,6 +67,8 @@ class AiSettingsActivity : AppCompatActivity() {
             showClawBotResult("已清除 ClawBot 登录状态", isError = false)
         }
 
+        binding.btnTestFeishu.setOnClickListener { testFeishu() }
+
         binding.btnSave.setOnClickListener { saveAndFinish() }
     }
 
@@ -318,6 +320,9 @@ class AiSettingsActivity : AppCompatActivity() {
         binding.etTgToken.setText(channelConfig.tgToken)
         val savedChatId = channelConfig.getTgChatId()
         binding.etTgChatId.setText(if (savedChatId == 0L) "" else savedChatId.toString())
+        binding.etFeishuAppId.setText(channelConfig.getFeishuAppId())
+        binding.etFeishuAppSecret.setText(channelConfig.getFeishuAppSecret())
+        observeFeishuStatusLine()
     }
 
     private fun saveAndFinish() {
@@ -333,6 +338,8 @@ class AiSettingsActivity : AppCompatActivity() {
         channelConfig.setTgToken(binding.etTgToken.text.toString().trim())
         val chatId = binding.etTgChatId.text.toString().trim().toLongOrNull() ?: 0L
         channelConfig.setTgChatId(chatId)
+        channelConfig.setFeishuAppId(binding.etFeishuAppId.text.toString().trim())
+        channelConfig.setFeishuAppSecret(binding.etFeishuAppSecret.text.toString().trim())
         finish()
     }
 
@@ -620,6 +627,98 @@ class AiSettingsActivity : AppCompatActivity() {
 
     private fun showTgResult(text: String, isError: Boolean) {
         binding.tvTgTestResult.apply {
+            visibility = View.VISIBLE
+            this.text = text
+            setTextColor(getColor(if (isError) android.R.color.holo_red_dark else android.R.color.holo_green_dark))
+        }
+    }
+
+    // endregion
+
+    // region Feishu Status
+
+    private fun observeFeishuStatusLine() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                remoteBridge.feishuStatus.collect { status ->
+                    binding.tvFeishuStatus.text = formatFeishuStatusLine(status)
+                }
+            }
+        }
+    }
+
+    private fun formatFeishuStatusLine(status: BridgeStatus): String {
+        return "状态: " + when (status) {
+            BridgeStatus.NOT_CONFIGURED -> "未配置"
+            BridgeStatus.STOPPED -> "已停止"
+            BridgeStatus.CONNECTED -> "已连接 ✓"
+            BridgeStatus.DISCONNECTED -> "未连接"
+        }
+    }
+
+    // endregion
+
+    // region Feishu Test
+
+    private fun testFeishu() {
+        val appId = binding.etFeishuAppId.text.toString().trim()
+        val appSecret = binding.etFeishuAppSecret.text.toString().trim()
+
+        if (appId.isEmpty() || appSecret.isEmpty()) {
+            showFeishuResult("请填写 App ID 和 App Secret", isError = true)
+            return
+        }
+
+        binding.btnTestFeishu.isEnabled = false
+        showFeishuResult("正在测试连接...", isError = false)
+
+        lifecycleScope.launch {
+            val result = testFeishuToken(appId, appSecret)
+            binding.btnTestFeishu.isEnabled = true
+            showFeishuResult(result.first, result.second)
+        }
+    }
+
+    private suspend fun testFeishuToken(appId: String, appSecret: String): Pair<String, Boolean> =
+        withContext(Dispatchers.IO) {
+            try {
+                val url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
+                val body = JSONObject().apply {
+                    put("app_id", appId)
+                    put("app_secret", appSecret)
+                }
+                val conn = (URL(url).openConnection() as HttpURLConnection).apply {
+                    requestMethod = "POST"
+                    setRequestProperty("Content-Type", "application/json")
+                    connectTimeout = 15000
+                    readTimeout = 15000
+                    doOutput = true
+                }
+                conn.outputStream.use { it.write(body.toString().toByteArray()) }
+
+                val code = conn.responseCode
+                val respBody = (if (code in 200..299) conn.inputStream else conn.errorStream)
+                    ?.bufferedReader()?.readText() ?: ""
+                conn.disconnect()
+
+                if (code in 200..299) {
+                    val json = JSONObject(respBody)
+                    val code = json.optInt("code", -1)
+                    if (code == 0) {
+                        "连接成功 ✓" to false
+                    } else {
+                        "App ID/Secret 无效: ${json.optString("msg")}" to true
+                    }
+                } else {
+                    "连接失败 (HTTP $code)\n$respBody" to true
+                }
+            } catch (e: Exception) {
+                "连接失败: ${e.message}" to true
+            }
+        }
+
+    private fun showFeishuResult(text: String, isError: Boolean) {
+        binding.tvFeishuTestResult.apply {
             visibility = View.VISIBLE
             this.text = text
             setTextColor(getColor(if (isError) android.R.color.holo_red_dark else android.R.color.holo_green_dark))

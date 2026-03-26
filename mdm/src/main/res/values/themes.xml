@@ -1,9 +1,39 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.MyApplication" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <style name="Base.Theme.MyApplication" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/mdm_primary</item>
+        <item name="colorPrimaryVariant">@color/mdm_primary_variant</item>
+        <item name="colorSecondary">@color/mdm_secondary</item>
+        <item name="colorTertiary">@color/mdm_tertiary</item>
+        <item name="colorError">@color/mdm_error</item>
+
+        <item name="android:colorBackground">@color/mdm_background</item>
+        <item name="colorSurface">@color/mdm_surface</item>
+        <item name="colorSurfaceVariant">@color/mdm_surface_variant</item>
+
+        <item name="android:statusBarColor">@color/mdm_background</item>
+        <item name="android:navigationBarColor">@color/mdm_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <item name="android:textColorPrimary">@color/mdm_text_primary</item>
+        <item name="android:textColorSecondary">@color/mdm_text_secondary</item>
     </style>
 
     <style name="Theme.MyApplication" parent="Base.Theme.MyApplication" />
+
+    <!-- 文字样式 -->
+    <style name="TextAppearance.Mdm.Title" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textColor">@color/mdm_text_primary</item>
+        <item name="android:letterSpacing">0.01</item>
+    </style>
+
+    <style name="TextAppearance.Mdm.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/mdm_text_primary</item>
+    </style>
+
+    <style name="TextAppearance.Mdm.Caption" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/mdm_text_secondary</item>
+    </style>
+
 </resources>

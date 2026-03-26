@@ -22,6 +22,7 @@ import com.andforce.andclaw.db.ChatMessageEntity
 import com.google.gson.Gson
 import com.andforce.andclaw.bridge.RemoteOutboundHelper
 import com.base.services.BridgeStatus
+import com.base.services.FeishuInboundMessage
 import com.base.services.IAiConfigService
 import com.base.services.IRemoteBridgeService
 import com.base.services.IRemoteChannelConfigService
@@ -86,6 +87,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
         return base + when (session?.channel) {
             RemoteChannel.TELEGRAM -> "（远程已发送到 Telegram）"
             RemoteChannel.CLAWBOT -> "（ClawBot 暂不支持图片远程回传；本地已保存，应用将尝试向远端发送文本说明）"
+            RemoteChannel.FEISHU -> "（飞书暂不支持图片远程回传；本地已保存）"
             else -> ""
         }
     }
@@ -95,6 +97,7 @@ object AgentController : ITgBridgeService, IAiConfigService {
         val suffix = when (session?.channel) {
             RemoteChannel.TELEGRAM -> "（已发送到 Telegram）"
             RemoteChannel.CLAWBOT -> "（已保存到本地；ClawBot 暂不支持该类型远程回传，应用将尝试向远端发送文本说明）"
+            RemoteChannel.FEISHU -> "（已保存到本地；飞书暂不支持该类型远程回传）"
             else -> ""
         }
         return base + suffix
@@ -109,6 +112,9 @@ object AgentController : ITgBridgeService, IAiConfigService {
         }
         remoteBridge.setClawBotInboundHandler { msg ->
             handleClawBotCommand(msg)
+        }
+        remoteBridge.setFeishuInboundHandler { msg ->
+            handleFeishuCommand(msg)
         }
         migrateOldProviderKeys()
         restoreConfig()
@@ -284,6 +290,44 @@ object AgentController : ITgBridgeService, IAiConfigService {
                 }
                 RemoteOutboundHelper.sendTyping(remoteBridge, clawSession)
                 withContext(Dispatchers.Main) { startAgent(msg.text, remoteSession = clawSession) }
+            }
+        }
+    }
+
+    private suspend fun handleFeishuCommand(msg: FeishuInboundMessage) {
+        Log.d(TAG, "Feishu message received: ${msg.text.take(100)}, chatId=${msg.chatId}, sender=${msg.senderId}")
+        val feishuSession = RemoteSession(
+            channel = RemoteChannel.FEISHU,
+            sessionKey = msg.chatId,
+            replyToken = msg.parentMessageId ?: msg.messageId,
+            userId = msg.senderId,
+            messageId = msg.messageId,
+            displayName = msg.senderType
+        )
+        when (msg.text.trim()) {
+            "/status" -> {
+                val agentInfo = if (isAgentRunning) "▶️ Agent 运行中: ${uiState.userInput}" else "⏸ Agent 空闲"
+                val body = "Andclaw 状态\n$agentInfo\n会话: ${msg.chatId}"
+                RemoteOutboundHelper.sendText(remoteBridge, feishuSession, body, replyToMessageId = null)
+            }
+            "/stop" -> {
+                withContext(Dispatchers.Main) { stopAgent() }
+                RemoteOutboundHelper.sendText(
+                    remoteBridge, feishuSession, "✅ 已停止当前任务", replyToMessageId = null
+                )
+            }
+            else -> {
+                val busy = withContext(Dispatchers.Main) { isAgentRunning to uiState.userInput }
+                if (busy.first) {
+                    RemoteOutboundHelper.sendText(
+                        remoteBridge, feishuSession,
+                        "⏳ Agent 正在执行上一任务，不会开始新任务。请稍后或发送 /stop 停止。进行中的任务：${busy.second}",
+                        replyToMessageId = null
+                    )
+                    return
+                }
+                RemoteOutboundHelper.sendTyping(remoteBridge, feishuSession)
+                withContext(Dispatchers.Main) { startAgent(msg.text, remoteSession = feishuSession) }
             }
         }
     }

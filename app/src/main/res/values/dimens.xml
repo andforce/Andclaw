@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ============================================
+         Andclaw 尺寸系统
+         ============================================ -->
+
+    <!-- 间距 -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_2xl">32dp</dimen>
+
+    <!-- 圆角 -->
+    <dimen name="radius_sm">8dp</dimen>
+    <dimen name="radius_md">12dp</dimen>
+    <dimen name="radius_lg">16dp</dimen>
+    <dimen name="radius_xl">20dp</dimen>
+    <dimen name="radius_full">999dp</dimen>
+
+    <!-- 卡片 -->
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+
+    <!-- 气泡 -->
+    <dimen name="bubble_corner_radius">20dp</dimen>
+    <dimen name="bubble_padding">12dp</dimen>
+    <dimen name="bubble_max_width">280dp</dimen>
+
+    <!-- 文字大小 -->
+    <dimen name="text_size_caption">12sp</dimen>
+    <dimen name="text_size_body">14sp</dimen>
+    <dimen name="text_size_title">16sp</dimen>
+    <dimen name="text_size_headline">20sp</dimen>
+
+    <!-- 工具栏 -->
+    <dimen name="toolbar_height">56dp</dimen>
+
+    <!-- 图标 -->
+    <dimen name="icon_size_sm">16dp</dimen>
+    <dimen name="icon_size_md">24dp</dimen>
+    <dimen name="icon_size_lg">32dp</dimen>
+</resources>

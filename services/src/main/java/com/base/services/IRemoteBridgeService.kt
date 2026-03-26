@@ -6,22 +6,21 @@ interface IRemoteBridgeService {
     val telegramStatus: StateFlow<BridgeStatus>
     val clawBotStatus: StateFlow<BridgeStatus>
     val clawBotLoginStatus: StateFlow<ClawBotLoginStatus>
+    val feishuStatus: StateFlow<BridgeStatus>
 
     fun startEligibleBridges()
     fun stopAllBridges()
     fun startTelegramBridgeIfConfigured()
     fun stopTelegramBridge()
     fun startClawBotBridgeIfConfigured(forceRelogin: Boolean = false)
+    fun startFeishuBridgeIfConfigured()
+    fun stopFeishuBridge()
 
-    /**
-     * 由 [com.andforce.andclaw.AgentController] 在初始化时注册；收到 Telegram 文本消息后回调（IO 协程中执行）。
-     */
     fun setTelegramInboundHandler(handler: suspend (TgInboundMessage) -> Unit) {}
 
-    /**
-     * 由 [com.andforce.andclaw.AgentController] 注册；收到 ClawBot 文本消息后在 IO 协程中回调。
-     */
     fun setClawBotInboundHandler(handler: suspend (RemoteIncomingMessage) -> Unit) {}
+
+    fun setFeishuInboundHandler(handler: suspend (FeishuInboundMessage) -> Unit) {}
 
     suspend fun requestClawBotQrCode(): ClawBotQrCodeResult
     suspend fun pollClawBotQrCodeStatus(qrcode: String): ClawBotQrPollResult

@@ -1,43 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:background="@color/background"
+    android:fitsSystemWindows="true">
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="Andclaw AI Agent"
-        app:titleTextColor="@android:color/white" />
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_toolbar"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Andclaw AI Agent"
+            app:titleTextAppearance="@style/TextAppearance.Andclaw.Title"
+            app:titleTextColor="@color/text_primary" />
+
+    </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chatRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:padding="8dp" />
+            android:paddingHorizontal="@dimen/spacing_md"
+            android:paddingVertical="@dimen/spacing_sm" />
 
-        <TextView
+        <!-- 空状态提示 -->
+        <LinearLayout
             android:id="@+id/emptyState"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:padding="24dp"
-            android:text="仅展示历史记录，不支持输入。请用另一部手机通过 Telegram 发送指令，在此查看 AI 的回复与操作。"
-            android:textAppearance="?attr/textAppearanceBody1"
-            android:textColor="?android:attr/textColorSecondary"
-            android:visibility="gone" />
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_2xl"
+            android:visibility="gone">
+
+            <!-- AI 图标占位 -->
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:alpha="0.6"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_mic"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="@string/empty_state_title"
+                android:textAppearance="@style/TextAppearance.Andclaw.Title"
+                android:textColor="@color/text_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:gravity="center"
+                android:text="@string/empty_state_subtitle"
+                android:textAppearance="@style/TextAppearance.Andclaw.Body"
+                android:textColor="@color/text_secondary" />
+
+        </LinearLayout>
+
     </FrameLayout>
 
-
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

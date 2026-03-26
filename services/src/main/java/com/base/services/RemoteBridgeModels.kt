@@ -2,7 +2,8 @@ package com.base.services
 
 enum class RemoteChannel {
     TELEGRAM,
-    CLAWBOT
+    CLAWBOT,
+    FEISHU
 }
 
 data class RemoteSession(
@@ -43,4 +44,17 @@ data class TgInboundMessage(
     val chatId: Long,
     val messageId: Long,
     val text: String
+)
+
+/** 飞书入站消息 */
+data class FeishuInboundMessage(
+    val eventId: String,
+    val messageId: String,
+    val chatId: String,
+    val chatType: String,
+    val senderId: String,
+    val senderType: String,
+    val text: String,
+    val createTime: Long = 0L,
+    val parentMessageId: String? = null
 )

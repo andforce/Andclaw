@@ -11,4 +11,44 @@
     <string name="confirm_clear_all">确定要清空所有对话记录吗？</string>
     <string name="confirm_delete_selected">确定要删除选中的 %d 条记录吗？</string>
     <string name="selected_count">已选 %d 项</string>
+
+    <!-- 空状态提示 -->
+    <string name="empty_state_title">暂无对话记录</string>
+    <string name="empty_state_subtitle">仅展示历史记录，不支持输入。\n请通过 Telegram 发送指令，在此查看 AI 的回复与操作。</string>
+
+    <!-- 动作测试页面 -->
+    <string name="action_section_screenshot">截屏</string>
+    <string name="action_section_screen_record">录屏</string>
+    <string name="action_section_download">文件下载</string>
+    <string name="action_section_text_input">文本输入</string>
+    <string name="action_section_gesture">手势操作</string>
+    <string name="action_section_global">全局操作</string>
+    <string name="action_section_dpm">应用管理</string>
+    <string name="action_section_clipboard">剪贴板</string>
+    <string name="action_section_share">分享</string>
+    <string name="action_section_log">日志</string>
+
+    <string name="btn_screenshot_save">截屏并保存</string>
+    <string name="btn_screenshot_ai">截屏发送 AI</string>
+    <string name="btn_record_start">开始录屏</string>
+    <string name="btn_record_stop">停止录屏</string>
+    <string name="btn_download_test">下载测试文件</string>
+    <string name="btn_text_inject">注入文本</string>
+    <string name="btn_swipe_up">上滑</string>
+    <string name="btn_swipe_down">下滑</string>
+    <string name="btn_swipe_left">左滑</string>
+    <string name="btn_swipe_right">右滑</string>
+    <string name="btn_long_press">长按</string>
+    <string name="btn_back">返回</string>
+    <string name="btn_home">主页</string>
+    <string name="btn_recents">最近</string>
+    <string name="btn_notifications">通知</string>
+    <string name="btn_quick_settings">快捷设置</string>
+    <string name="btn_install_apk">静默安装</string>
+    <string name="btn_uninstall_app">静默卸载</string>
+    <string name="btn_grant_permission">授权权限</string>
+    <string name="btn_copy">复制</string>
+    <string name="btn_paste">粘贴</string>
+    <string name="btn_share">分享</string>
+    <string name="btn_clear">清除</string>
 </resources>

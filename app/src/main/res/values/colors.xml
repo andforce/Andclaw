@@ -1,5 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ============================================
+         Andclaw Material Design 3 深色主题配色系统
+         ============================================ -->
+
+    <!-- 主色系 - 科技蓝 -->
+    <color name="primary">#FF00D4FF</color>
+    <color name="primary_variant">#FF00A8CC</color>
+    <color name="on_primary">#FF000000</color>
+
+    <!-- 次要色系 - 翠绿 -->
+    <color name="secondary">#FF00E676</color>
+    <color name="secondary_variant">#FF00C853</color>
+    <color name="on_secondary">#FF000000</color>
+
+    <!-- 第三色系 - 橙色点缀 -->
+    <color name="tertiary">#FFFF6D00</color>
+    <color name="on_tertiary">#FF000000</color>
+
+    <!-- 背景色系 - 深色主题 -->
+    <color name="background">#FF0D1117</color>
+    <color name="background_elevated">#FF161B22</color>
+    <color name="surface">#FF161B22</color>
+    <color name="surface_variant">#FF21262D</color>
+    <color name="on_surface">#FFE6EDF3</color>
+    <color name="on_surface_variant">#FF8B949E</color>
+
+    <!-- 错误色系 -->
+    <color name="error">#FFFF5252</color>
+    <color name="error_container">#FF4A1C1C</color>
+    <color name="on_error">#FF000000</color>
+
+    <!-- 聊天气泡颜色 -->
+    <!-- 用户气泡 - 渐变蓝起点 -->
+    <color name="bubble_user_start">#FF0077CC</color>
+    <color name="bubble_user_end">#FF00A8E8</color>
+    <color name="bubble_user">#FF1A5276</color>
+    <color name="on_bubble_user">#FFFFFFFF</color>
+
+    <!-- AI 气泡 - 深灰色 -->
+    <color name="bubble_ai">#FF21262D</color>
+    <color name="bubble_ai_border">#FF30363D</color>
+    <color name="on_bubble_ai">#FFE6EDF3</color>
+
+    <!-- 系统气泡 -->
+    <color name="bubble_system">#FF161B22</color>
+    <color name="on_bubble_system">#FF8B949E</color>
+
+    <!-- 卡片颜色 -->
+    <color name="card_background">#FF21262D</color>
+    <color name="card_background_elevated">#FF2D333B</color>
+    <color name="card_border">#FF30363D</color>
+
+    <!-- 文字颜色 -->
+    <color name="text_primary">#FFE6EDF3</color>
+    <color name="text_secondary">#FF8B949E</color>
+    <color name="text_hint">#FF6E7681</color>
+
+    <!-- 分割线 -->
+    <color name="divider">#1FFFFFFF</color>
+    <color name="divider_dark">#FF30363D</color>
+
+    <!-- 工具栏渐变 -->
+    <color name="toolbar_start">#FF0D1117</color>
+    <color name="toolbar_end">#FF161B22</color>
+
+    <!-- 状态指示颜色 -->
+    <color name="status_running">#FF00E676</color>
+    <color name="status_idle">#FFFFD600</color>
+    <color name="status_error">#FFFF5252</color>
+
+    <!-- 遮罩 -->
+    <color name="scrim">#99000000</color>
+    <color name="scrim_light">#33000000</color>
+
+    <!-- 旧版兼容 (保持引用不报错) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -8,8 +83,4 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#FF9E9E9E</color>
-    <color name="divider">#1F000000</color>
-    <color name="bubble_user">#FFD0BCFF</color>
-    <color name="bubble_ai">#FFE8DEF8</color>
-    <color name="bubble_system">#FFF5F5F5</color>
 </resources>

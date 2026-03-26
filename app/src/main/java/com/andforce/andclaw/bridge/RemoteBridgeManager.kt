@@ -7,12 +7,14 @@ import com.andforce.andclaw.bridge.clawbot.ClawBotApiClient
 import com.andforce.andclaw.bridge.clawbot.ClawBotBridge
 import com.andforce.andclaw.bridge.clawbot.buildClawBotAuthStateFromConfirmed
 import com.andforce.andclaw.bridge.clawbot.isCompleteForBridge
+import com.andforce.andclaw.bridge.feishu.FeishuBridge
 import com.base.services.BridgeStatus
 import com.base.services.ClawBotAuthState
 import com.base.services.ClawBotDefaults
 import com.base.services.ClawBotLoginStatus
 import com.base.services.ClawBotQrCodeResult
 import com.base.services.ClawBotQrPollResult
+import com.base.services.FeishuInboundMessage
 import com.base.services.IRemoteBridgeService
 import com.base.services.IRemoteChannelConfigService
 import com.base.services.RemoteChannel
@@ -54,6 +56,9 @@ class RemoteBridgeManager(
     private val _clawBotLoginStatus = MutableStateFlow(ClawBotLoginStatus.NOT_CONFIGURED)
     override val clawBotLoginStatus: StateFlow<ClawBotLoginStatus> = _clawBotLoginStatus.asStateFlow()
 
+    private val _feishuStatus = MutableStateFlow(BridgeStatus.NOT_CONFIGURED)
+    override val feishuStatus: StateFlow<BridgeStatus> = _feishuStatus.asStateFlow()
+
     private var telegramBridge: TelegramBridge? = null
 
     /** 当前已启动轮询的 token（trim 后）；用于幂等，避免重复创建 [TelegramBridge]。 */
@@ -67,6 +72,10 @@ class RemoteBridgeManager(
     private var clawBotBridgeActiveToken: String? = null
 
     private var clawBotInboundHandler: (suspend (RemoteIncomingMessage) -> Unit)? = null
+
+    private var feishuBridge: FeishuBridge? = null
+    private var feishuBridgeActiveAppId: String? = null
+    private var feishuInboundHandler: (suspend (FeishuInboundMessage) -> Unit)? = null
 
     private val clawBotApiClient = ClawBotApiClient()
 
@@ -82,14 +91,20 @@ class RemoteBridgeManager(
         clawBotInboundHandler = handler
     }
 
+    override fun setFeishuInboundHandler(handler: suspend (FeishuInboundMessage) -> Unit) {
+        feishuInboundHandler = handler
+    }
+
     override fun startEligibleBridges() {
         startTelegramBridgeIfConfigured()
         startClawBotBridgeIfConfigured(forceRelogin = false)
+        startFeishuBridgeIfConfigured()
     }
 
     override fun stopAllBridges() {
         stopTelegramBridge()
         stopClawBotBridgeInternal()
+        stopFeishuBridgeInternal()
     }
 
     override fun startTelegramBridgeIfConfigured() {
@@ -209,6 +224,50 @@ class RemoteBridgeManager(
         _clawBotStatus.value = BridgeStatus.STOPPED
     }
 
+    override fun startFeishuBridgeIfConfigured() {
+        val appId = getFeishuAppId().trim()
+        val appSecret = getFeishuAppSecret().trim()
+        
+        if (appId.isBlank() || appSecret.isBlank()) {
+            if (feishuBridge != null) {
+                stopFeishuBridgeInternal()
+            }
+            _feishuStatus.value = BridgeStatus.NOT_CONFIGURED
+            return
+        }
+        
+        if (feishuBridge != null && feishuBridgeActiveAppId == appId) {
+            return
+        }
+        
+        feishuBridge?.stop()
+        feishuBridgeActiveAppId = null
+        
+        val bridge = FeishuBridge(
+            scope = scope,
+            getAppId = { getFeishuAppId() },
+            getAppSecret = { getFeishuAppSecret() },
+            onInbound = { msg ->
+                feishuInboundHandler?.invoke(msg) ?: Unit
+            },
+            onConnectionStatus = { status -> _feishuStatus.value = status }
+        )
+        feishuBridge = bridge
+        feishuBridgeActiveAppId = appId
+        bridge.start()
+    }
+
+    override fun stopFeishuBridge() {
+        stopFeishuBridgeInternal()
+    }
+
+    private fun stopFeishuBridgeInternal() {
+        feishuBridge?.stop()
+        feishuBridge = null
+        feishuBridgeActiveAppId = null
+        _feishuStatus.value = BridgeStatus.STOPPED
+    }
+
     override suspend fun sendTyping(session: RemoteSession) {
         when (session.channel) {
             RemoteChannel.TELEGRAM -> {
@@ -216,6 +275,7 @@ class RemoteBridgeManager(
                 telegramBridge?.sendTyping(chatId)
             }
             RemoteChannel.CLAWBOT -> clawBotBridge?.sendTyping(session)
+            RemoteChannel.FEISHU -> feishuBridge?.sendTyping(session)
         }
     }
 
@@ -227,6 +287,7 @@ class RemoteBridgeManager(
                 telegramBridge?.sendText(chatId, text, replyTo)
             }
             RemoteChannel.CLAWBOT -> clawBotBridge?.sendText(session, text)
+            RemoteChannel.FEISHU -> feishuBridge?.sendText(session, text)
         }
     }
 
@@ -249,6 +310,9 @@ class RemoteBridgeManager(
                 } else {
                     b.sendText(session, text)
                 }
+            }
+            RemoteChannel.FEISHU -> {
+                feishuBridge?.sendPhoto(session, photoBytes, caption, fileName)
             }
         }
     }
@@ -273,6 +337,10 @@ class RemoteBridgeManager(
                     b.sendText(session, text)
                 }
             }
+            RemoteChannel.FEISHU -> {
+                val text = "[视频已保存到本地] $fileName${caption?.let { " - $it" } ?: ""}"
+                feishuBridge?.sendText(session, text)
+            }
         }
     }
 
@@ -295,6 +363,10 @@ class RemoteBridgeManager(
                 } else {
                     b.sendText(session, text)
                 }
+            }
+            RemoteChannel.FEISHU -> {
+                val text = "[音频已保存到本地] $fileName${caption?.let { " - $it" } ?: ""}"
+                feishuBridge?.sendText(session, text)
             }
         }
     }
@@ -378,6 +450,38 @@ class RemoteBridgeManager(
         channelPrefs.edit().putString(KEY_CLAWBOT_SYNC_BUF, syncBuf).apply()
     }
 
+    override fun getFeishuAppId(): String =
+        channelPrefs.getString(KEY_FEISHU_APP_ID, "") ?: ""
+
+    override fun setFeishuAppId(appId: String) {
+        val oldAppId = getFeishuAppId()
+        channelPrefs.edit().putString(KEY_FEISHU_APP_ID, appId).apply()
+        if (appId.trim() != oldAppId.trim()) {
+            stopFeishuBridgeInternal()
+            if (appId.isNotBlank() && getFeishuAppSecret().isNotBlank()) {
+                startFeishuBridgeIfConfigured()
+            } else {
+                _feishuStatus.value = BridgeStatus.NOT_CONFIGURED
+            }
+        }
+    }
+
+    override fun getFeishuAppSecret(): String =
+        channelPrefs.getString(KEY_FEISHU_APP_SECRET, "") ?: ""
+
+    override fun setFeishuAppSecret(secret: String) {
+        val oldSecret = getFeishuAppSecret()
+        channelPrefs.edit().putString(KEY_FEISHU_APP_SECRET, secret).apply()
+        if (secret.trim() != oldSecret.trim() && getFeishuAppId().isNotBlank()) {
+            stopFeishuBridgeInternal()
+            if (secret.isNotBlank()) {
+                startFeishuBridgeIfConfigured()
+            } else {
+                _feishuStatus.value = BridgeStatus.NOT_CONFIGURED
+            }
+        }
+    }
+
     /**
      * 旧版 [RemoteChannelPreferences] 中曾单独存 Telegram；迁移到 agent_config，避免丢配置。
      */
@@ -419,6 +523,9 @@ class RemoteBridgeManager(
         const val KEY_CLAWBOT_SYNC_BUF = "clawbot_sync_buf"
         const val KEY_CLAWBOT_BASE_URL = "clawbot_base_url"
         const val KEY_CLAWBOT_BOT_TYPE = "clawbot_bot_type"
+
+        const val KEY_FEISHU_APP_ID = "feishu_app_id"
+        const val KEY_FEISHU_APP_SECRET = "feishu_app_secret"
 
         const val JSON_BOT_TOKEN = "botToken"
         const val JSON_BASE_URL = "baseUrl"

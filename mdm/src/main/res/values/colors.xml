@@ -1,20 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
- Copyright (C) 2015 The Android Open Source Project
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
 <resources>
+    <!-- MDM 模块颜色 - 与 app 模块保持完全一致 -->
+    <color name="mdm_primary">#FF00D4FF</color>
+    <color name="mdm_primary_variant">#FF00A8CC</color>
+    <color name="mdm_secondary">#FF00E676</color>
+    <color name="mdm_secondary_variant">#FF00C853</color>
+    <color name="mdm_tertiary">#FF7C4DFF</color>
+    <color name="mdm_error">#FFFF5252</color>
+
+    <color name="mdm_background">#FF0D1117</color>
+    <color name="mdm_background_elevated">#FF161B22</color>
+    <color name="mdm_surface">#FF161B22</color>
+    <color name="mdm_surface_variant">#FF21262D</color>
+    <color name="mdm_card_background">#FF21262D</color>
+    <color name="mdm_card_border">#FF30363D</color>
+
+    <color name="mdm_text_primary">#FFE6EDF3</color>
+    <color name="mdm_text_secondary">#FF8B949E</color>
+    <color name="mdm_text_hint">#FF6E7681</color>
+
+    <color name="mdm_divider">#1FFFFFFF</color>
+    <color name="mdm_divider_dark">#FF30363D</color>
+
+    <color name="mdm_status_running">#FF00E676</color>
+    <color name="mdm_status_idle">#FFFFD600</color>
+    <color name="mdm_status_error">#FFFF5252</color>
+
+    <!-- 保留原有颜色（兼容性） -->
     <color name="teal">#009688</color>
     <color name="text_black">#333333</color>
     <color name="red">#ff0000</color>

@@ -1,106 +1,135 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
     android:paddingVertical="4dp">
 
+    <!-- 选择模式 CheckBox -->
     <CheckBox
         android:id="@+id/cbSelect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
         android:layout_marginStart="4dp"
-        android:visibility="gone" />
+        android:visibility="gone"
+        tools:visibility="visible" />
 
-    <FrameLayout
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/bubbleContainer"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1">
+        android:layout_gravity="end"
+        android:layout_marginStart="48dp"
+        android:layout_marginEnd="12dp"
+        android:maxWidth="@dimen/bubble_max_width"
+        android:orientation="vertical"
+        tools:layout_gravity="end">
 
-        <LinearLayout
-            android:id="@+id/bubbleContainer"
+        <!-- 气泡卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/bubbleCard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:orientation="vertical">
+            app:cardBackgroundColor="@color/bubble_ai"
+            app:cardCornerRadius="@dimen/bubble_corner_radius"
+            app:cardElevation="2dp"
+            app:strokeColor="@color/bubble_ai_border"
+            app:strokeWidth="1dp">
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/bubbleCard"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp">
+                android:orientation="vertical"
+                android:paddingHorizontal="@dimen/bubble_padding"
+                android:paddingVertical="10dp">
 
-                <LinearLayout
+                <!-- 消息内容 -->
+                <TextView
+                    android:id="@+id/tvContent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
+                    android:lineSpacingMultiplier="1.3"
+                    android:textAppearance="@style/TextAppearance.Andclaw.Body"
+                    android:textColor="@color/on_bubble_ai"
+                    tools:text="这是一条消息内容示例" />
 
-                    <TextView
-                        android:id="@+id/tvContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceBody2" />
+                <!-- 截图预览 -->
+                <ImageView
+                    android:id="@+id/ivScreenshot"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
-                    <ImageView
-                        android:id="@+id/ivScreenshot"
-                        android:layout_width="200dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:adjustViewBounds="true"
-                        android:scaleType="fitCenter"
-                        android:visibility="gone" />
+                <!-- 分割线 -->
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@color/divider"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
-                    <View
-                        android:id="@+id/divider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="8dp"
-                        android:background="@color/divider"
-                        android:visibility="gone" />
+                <!-- 操作类型标签 -->
+                <TextView
+                    android:id="@+id/tvActionType"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:textAppearance="@style/TextAppearance.Andclaw.Caption"
+                    android:textColor="@color/primary"
+                    android:visibility="gone"
+                    tools:text="执行操作: CLICK"
+                    tools:visibility="visible" />
 
-                    <TextView
-                        android:id="@+id/tvActionType"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textAppearance="?attr/textAppearanceCaption"
-                        android:textColor="@color/gray"
-                        android:visibility="gone" />
+                <!-- 操作详情 -->
+                <TextView
+                    android:id="@+id/tvActionDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Andclaw.Caption"
+                    android:textColor="@color/text_secondary"
+                    android:visibility="gone"
+                    tools:text="坐标: (540, 960)"
+                    tools:visibility="visible" />
 
-                    <TextView
-                        android:id="@+id/tvActionDetail"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="?attr/textAppearanceCaption"
-                        android:visibility="gone" />
+                <!-- 执行按钮 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExecute"
+                    style="@style/Widget.Material3.Button.TonalButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:minHeight="0dp"
+                    android:text="@string/execute_now"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/primary"
+                    app:cornerRadius="8dp"
+                    tools:visibility="visible" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnExecute"
-                        style="@style/Widget.MaterialComponents.Button.TextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginTop="8dp"
-                        android:minHeight="0dp"
-                        android:text="@string/execute_now"
-                        android:textSize="12sp"
-                        android:visibility="gone" />
+            </LinearLayout>
 
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
 
-            <TextView
-                android:id="@+id/tvTimestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:textAppearance="?attr/textAppearanceCaption" />
+        <!-- 时间戳 -->
+        <TextView
+            android:id="@+id/tvTimestamp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:textAppearance="@style/TextAppearance.Andclaw.Caption"
+            android:textColor="@color/text_hint"
+            tools:text="14:30" />
 
-        </LinearLayout>
-    </FrameLayout>
+    </LinearLayout>
 
-</LinearLayout>
+</FrameLayout>

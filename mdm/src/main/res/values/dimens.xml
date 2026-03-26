@@ -72,4 +72,17 @@
 
     <!-- Dimens used for add account activity -->
     <dimen name="add_account_option_height">48dp</dimen>
+
+    <!-- Unified spacing system -->
+    <dimen name="spacing_xs">4dp</dimen>
+    <dimen name="spacing_sm">8dp</dimen>
+    <dimen name="spacing_md">12dp</dimen>
+    <dimen name="spacing_lg">16dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+
+    <!-- Card and component dimensions -->
+    <dimen name="card_corner_radius">16dp</dimen>
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="icon_size">48dp</dimen>
+    <dimen name="radius_md">12dp</dimen>
 </resources>

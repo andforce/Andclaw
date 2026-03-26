@@ -15,10 +15,12 @@
 -->
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="14dp"
-    android:orientation="vertical" >
+    android:padding="@dimen/spacing_md"
+    android:background="@color/mdm_background"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -30,15 +32,16 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:text="@string/network_stats_choose_query_label"
-            android:textSize="14sp" />
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/mdm_text_primary" />
         <Spinner
             android:id="@+id/query_type_spinner"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
             android:layout_height="wrap_content"
-            android:paddingTop="8dip"
-            android:paddingBottom="8dip"
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_sm"
             android:entries="@array/network_stats_queries_array"/>
     </LinearLayout>
 
@@ -46,9 +49,10 @@
         android:id="@+id/explanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="4dp"
+        android:paddingTop="@dimen/spacing_xs"
         android:textStyle="italic"
-        android:textSize="14sp" />
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/mdm_text_secondary" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -60,14 +64,16 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:text="@string/network_stats_start_date_label"
-            android:textSize="14sp" />
-        <Button
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/mdm_text_primary" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/start_date_button"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/spacing_xs"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.Button" />
     </LinearLayout>
 
     <LinearLayout
@@ -80,25 +86,27 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:text="@string/network_stats_end_date_label"
-            android:textSize="14sp" />
-        <Button
+            android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/mdm_text_primary" />
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/end_date_button"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="@dimen/spacing_xs"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            style="@style/Widget.Material3.Button" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dip"
-        android:textSize="14sp"
+        android:paddingStart="@dimen/spacing_sm"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textAlignment="viewStart"
-        android:paddingTop="8dp"
-        android:paddingBottom="4dp"
-        android:textColor="?android:attr/colorAccent"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_xs"
+        android:textColor="@color/mdm_primary"
         style="?android:attr/listSeparatorTextViewStyle"
         android:text="@string/network_stats_result" />
 
@@ -106,15 +114,16 @@
         android:id="@+id/data_usage_summary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dip"
-        android:paddingBottom="8dip"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_sm"
         android:visibility="gone"
-        android:textSize="14sp" />
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="@color/mdm_text_primary" />
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="wrap_content"
-        android:layout_height="0dip"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="gone"
         android:clipChildren="false"
@@ -124,7 +133,7 @@
     <ListView
         android:id="@+id/app_history"
         android:layout_width="wrap_content"
-        android:layout_height="0dip"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:visibility="gone"
         android:clipChildren="false"

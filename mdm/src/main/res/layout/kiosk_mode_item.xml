@@ -20,22 +20,23 @@ limitations under the License.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="8dp">
+    android:padding="@dimen/spacing_sm">
 
     <ImageView
         android:id="@+id/pkg_icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/icon_size"
+        android:layout_height="@dimen/icon_size"
         android:scaleType="fitCenter"/>
 
     <TextView
         android:id="@+id/pkg_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="@dimen/spacing_xs"
         android:gravity="center"
         android:maxLines="2"
         android:ellipsize="end"
-        android:textSize="12sp"/>
+        android:textAppearance="?attr/textAppearanceBodySmall"
+        android:textColor="@color/mdm_text_primary"/>
 
 </LinearLayout>

@@ -186,6 +186,14 @@ open class SetupKioskModeActivity : AppCompatActivity() {
         }
 
         lifecycleScope.launch {
+            remoteBridgeService.feishuStatus.collect { status ->
+                binding?.apply {
+                    feishuStatus.text = bridgeStatusLabel(status)
+                }
+            }
+        }
+
+        lifecycleScope.launch {
             combine(
                 remoteBridgeService.clawBotStatus,
                 remoteBridgeService.clawBotLoginStatus

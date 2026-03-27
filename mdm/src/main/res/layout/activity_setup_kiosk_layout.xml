@@ -188,6 +188,44 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/feishu_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/activity_vertical_margin"
+                    app:cardBackgroundColor="@color/mdm_card_background"
+                    app:cardCornerRadius="@dimen/card_corner_radius"
+                    app:cardElevation="@dimen/card_elevation"
+                    app:strokeColor="@color/mdm_card_border"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/card_padding">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="飞书连接"
+                            android:textAppearance="@style/TextAppearance.Mdm.Title"
+                            android:textColor="@color/mdm_tertiary" />
+
+                        <TextView
+                            android:id="@+id/feishu_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:text="未配置"
+                            android:textAppearance="@style/TextAppearance.Mdm.Body"
+                            android:textColor="@color/mdm_text_secondary"
+                            tools:text="未配置" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/claw_bot_card"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
